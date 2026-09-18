@@ -52,23 +52,6 @@ public class TeleOPCode extends LinearOpMode {
             frontRight.setPower(f_Vector_sub);
             backLeft.setPower(f_Vector_sub);
             backRight.setPower(f_Vector_add);
-
-            if(gamepad1.right_stick_x > 0.25)
-            {
-                //turn clock wise
-                frontLeft.setPower(1);
-                frontRight.setPower(-1);
-                backLeft.setPower(1);
-                backRight.setPower(-1);
-            }
-            if(gamepad1.right_stick_x < -0.25)
-            {
-                //turn counter clock wise
-                frontLeft.setPower(-1);
-                frontRight.setPower(1);
-                backLeft.setPower(-1);
-                backRight.setPower(1);
-            }
         }
         else{
             frontLeft.setPower(0);
@@ -76,6 +59,30 @@ public class TeleOPCode extends LinearOpMode {
             backLeft.setPower(0);
             backRight.setPower(0);
         }
+        if(gamepad1.right_stick_x > 0.25)
+        {
+            //turn clock wise
+            frontLeft.setPower(1);
+            frontRight.setPower(-1);
+            backLeft.setPower(1);
+            backRight.setPower(-1);
+        }
+        else if(gamepad1.right_stick_x < -0.25)
+        {
+            //turn counter clock wise
+            frontLeft.setPower(-1);
+            frontRight.setPower(1);
+            backLeft.setPower(-1);
+            backRight.setPower(1);
+        }
+        else
+        {
+            frontLeft.setPower(0);
+            frontRight.setPower(0);
+            backLeft.setPower(0);
+            backRight.setPower(0);
+        }
+
     }
 }
 
