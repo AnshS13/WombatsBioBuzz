@@ -13,6 +13,8 @@ public class TeleOPCode extends LinearOpMode {
     DcMotor backLeft;
     DcMotor backRight;
 
+//    DcMotor intake;
+
     @Override
     public void runOpMode() {
         frontLeft = hardwareMap.get(DcMotor.class, "frontLeft");
@@ -21,6 +23,8 @@ public class TeleOPCode extends LinearOpMode {
         backLeft = hardwareMap.get(DcMotor.class, "backLeft");
 //        backLeft.setDirection(DcMotorSimple.Direction.REVERSE);
         backRight = hardwareMap.get(DcMotor.class, "backRight");
+
+//        intake = hardwareMap.get(DcMotor.class, "intake");
         waitForStart();
         telemetry.addData("Telemetry", "Called");
 
@@ -59,21 +63,13 @@ public class TeleOPCode extends LinearOpMode {
             backLeft.setPower(0);
             backRight.setPower(0);
         }
-        if(gamepad1.right_stick_x > 0.25)
+        if(Math.abs(gamepad1.right_stick_x) > 0.25)
         {
             //turn clock wise
-            frontLeft.setPower(1);
-            frontRight.setPower(-1);
-            backLeft.setPower(1);
-            backRight.setPower(-1);
-        }
-        else if(gamepad1.right_stick_x < -0.25)
-        {
-            //turn counter clock wise
-            frontLeft.setPower(-1);
-            frontRight.setPower(1);
-            backLeft.setPower(-1);
-            backRight.setPower(1);
+            frontLeft.setPower(gamepad1.right_stick_x);
+            frontRight.setPower(-gamepad1.right_stick_x);
+            backLeft.setPower(gamepad1.right_stick_x);
+            backRight.setPower(-gamepad1.right_stick_x);
         }
         else
         {
@@ -84,5 +80,14 @@ public class TeleOPCode extends LinearOpMode {
         }
 
     }
+
+    public void Intakes()
+    {
+        if(gamepad1.rightTriggerWasPressed())
+        {
+
+        }
+    }
+
 }
 
