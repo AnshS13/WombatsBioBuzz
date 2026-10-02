@@ -2,8 +2,11 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.DigitalChannel;
+import com.qualcomm.robotcore.hardware.configuration.annotations.DigitalIoDeviceType;
 //This is a test comment in the local file
 //Now I am dangerously changing in the remote.
 
@@ -14,18 +17,21 @@ public class TeleOPCode extends LinearOpMode {
     DcMotor backLeft;
     DcMotor backRight;
 
-//    DcMotor intake;
+    ColorSensor colorSensor;
+
+    //DcMotor intake;
 
     @Override
     public void runOpMode() {
-        frontLeft = hardwareMap.get(DcMotor.class, "frontLeft");
-        frontLeft.setDirection(DcMotorSimple.Direction.REVERSE);
-        frontRight = hardwareMap.get(DcMotor.class, "frontRight");
-        backLeft = hardwareMap.get(DcMotor.class, "backLeft");
+//        frontLeft = hardwareMap.get(DcMotor.class, "frontLeft");
+//        frontLeft.setDirection(DcMotorSimple.Direction.REVERSE);
+//        frontRight = hardwareMap.get(DcMotor.class, "frontRight");
+//        backLeft = hardwareMap.get(DcMotor.class, "backLeft");
 //        backLeft.setDirection(DcMotorSimple.Direction.REVERSE);
-        backRight = hardwareMap.get(DcMotor.class, "backRight");
+//        backRight = hardwareMap.get(DcMotor.class, "backRight");
+        colorSensor = hardwareMap.get(ColorSensor.class, "color");
 
-//        intake = hardwareMap.get(DcMotor.class, "intake");
+       // intake = hardwareMap.get(DcMotor.class, "intake");
         waitForStart();
         telemetry.addData("Telemetry", "Called");
 
@@ -34,61 +40,81 @@ public class TeleOPCode extends LinearOpMode {
         while (opModeIsActive()) {
             telemetry.addData("X: ", gamepad1.left_stick_x);
             telemetry.addData("Y: ", gamepad1.left_stick_y);
+            telemetry.addData("Color Red", colorSensor.red());
+            telemetry.addData("Color Blue", colorSensor.blue());
+            telemetry.addData("Color Green", colorSensor.green());
             telemetry.update();
 
-            Omnimovement();
+            //Omnimovement();
+            //Intakes();
         }
 
 
     }
-    public void Omnimovement()
-    {
-        //Uses a Y-Vector and X-Vector, adds them to get
-        if (Math.abs(gamepad1.left_stick_y) > 0.25  || Math.abs(gamepad1.left_stick_x) >0.25) {
-            double vector_Add =  (-1 * gamepad1.left_stick_y) + gamepad1.left_stick_x;
-            double vector_Sub =  (-1 * gamepad1.left_stick_y) - gamepad1.left_stick_x;
-            int negative_Add = vector_Add<0?-1:1;
-            int negative_sub = vector_Sub<0?-1:1;
-            double f_Vector_add = Math.abs(vector_Add)>1? negative_Add : vector_Add;
-            double f_Vector_sub = Math.abs(vector_Sub)>1? negative_sub : vector_Sub;
+//    public void Omnimovement()
+//    {
+//        //Uses a Y-Vector and X-Vector, adds them to get
+//        if (Math.abs(gamepad1.left_stick_y) > 0.25  || Math.abs(gamepad1.left_stick_x) >0.25) {
+//            double vector_Add =  (-1 * gamepad1.left_stick_y) + gamepad1.left_stick_x;
+//            double vector_Sub =  (-1 * gamepad1.left_stick_y) - gamepad1.left_stick_x;
+//            int negative_Add = vector_Add<0?-1:1;
+//            int negative_sub = vector_Sub<0?-1:1;
+//            double f_Vector_add = Math.abs(vector_Add)>1? negative_Add : vector_Add;
+//            double f_Vector_sub = Math.abs(vector_Sub)>1? negative_sub : vector_Sub;
+//
+//
+//            frontLeft.setPower(f_Vector_add);
+//            frontRight.setPower(f_Vector_sub);
+//            backLeft.setPower(f_Vector_sub);
+//            backRight.setPower(f_Vector_add);
+//        }
+//        else{
+//            frontLeft.setPower(0);
+//            frontRight.setPower(0);
+//            backLeft.setPower(0);
+//            backRight.setPower(0);
+//        }
+//        if(Math.abs(gamepad1.right_stick_x) > 0.25)
+//        {
+//            //turn clock wise
+//            frontLeft.setPower(gamepad1.right_stick_x);
+//            frontRight.setPower(-gamepad1.right_stick_x);
+//            backLeft.setPower(gamepad1.right_stick_x);
+//            backRight.setPower(-gamepad1.right_stick_x);
+//        }
+//        else
+//        {
+//            frontLeft.setPower(0);
+//            frontRight.setPower(0);
+//            backLeft.setPower(0);
+//            backRight.setPower(0);
+//        }
+//
+//    }
 
+//    public void Intakes()
+//    {
+//        if(gamepad1.rightTriggerWasPressed())
+//        {
+//            intake.setPower(0.5);
+//        }
+//        else if(gamepad1.rightTriggerWasReleased())
+//        {
+//            intake.setPower(0);
+//        }
+//        else if(gamepad1.leftTriggerWasPressed())
+//        {
+//            intake.setPower(-0.5);
+//        }
+//        else if(gamepad1.leftTriggerWasReleased())
+//        {
+//            intake.setPower(0);
+//        }
+//    }
 
-            frontLeft.setPower(f_Vector_add);
-            frontRight.setPower(f_Vector_sub);
-            backLeft.setPower(f_Vector_sub);
-            backRight.setPower(f_Vector_add);
-        }
-        else{
-            frontLeft.setPower(0);
-            frontRight.setPower(0);
-            backLeft.setPower(0);
-            backRight.setPower(0);
-        }
-        if(Math.abs(gamepad1.right_stick_x) > 0.25)
-        {
-            //turn clock wise
-            frontLeft.setPower(gamepad1.right_stick_x);
-            frontRight.setPower(-gamepad1.right_stick_x);
-            backLeft.setPower(gamepad1.right_stick_x);
-            backRight.setPower(-gamepad1.right_stick_x);
-        }
-        else
-        {
-            frontLeft.setPower(0);
-            frontRight.setPower(0);
-            backLeft.setPower(0);
-            backRight.setPower(0);
-        }
-
-    }
-
-    public void Intakes()
-    {
-        if(gamepad1.rightTriggerWasPressed())
-        {
-
-        }
-    }
-
+//    public void Outtakes()
+//    {
+//        if()
+//    }
 }
 
