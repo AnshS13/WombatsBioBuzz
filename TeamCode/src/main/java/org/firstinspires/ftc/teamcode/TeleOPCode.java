@@ -10,8 +10,9 @@ import com.qualcomm.robotcore.hardware.configuration.annotations.DigitalIoDevice
 //This is a test comment in the local file
 //Now I am dangerously changing in the remote.
 
-@TeleOp(name = "Testing2")
-public class TeleOPCode extends LinearOpMode {
+@TeleOp(name = "Testing")
+public class TeleOPCode extends LinearOpMode
+{
     DcMotor frontLeft;
     DcMotor frontRight;
     DcMotor backLeft;
@@ -22,7 +23,8 @@ public class TeleOPCode extends LinearOpMode {
     //DcMotor intake;
 
     @Override
-    public void runOpMode() {
+    public void runOpMode()
+    {
 //        frontLeft = hardwareMap.get(DcMotor.class, "frontLeft");
 //        frontLeft.setDirection(DcMotorSimple.Direction.REVERSE);
 //        frontRight = hardwareMap.get(DcMotor.class, "frontRight");
@@ -31,26 +33,48 @@ public class TeleOPCode extends LinearOpMode {
 //        backRight = hardwareMap.get(DcMotor.class, "backRight");
         colorSensor = hardwareMap.get(ColorSensor.class, "color");
 
+        String color = "";
+
        // intake = hardwareMap.get(DcMotor.class, "intake");
         waitForStart();
         telemetry.addData("Telemetry", "Called");
 
 
 
-        while (opModeIsActive()) {
-            telemetry.addData("X: ", gamepad1.left_stick_x);
-            telemetry.addData("Y: ", gamepad1.left_stick_y);
-            telemetry.addData("Color Red", colorSensor.red());
-            telemetry.addData("Color Blue", colorSensor.blue());
-            telemetry.addData("Color Green", colorSensor.green());
-            telemetry.update();
 
-            //Omnimovement();
-            //Intakes();
-        }
+            while (opModeIsActive()) {
+                if (colorSensor.red() > 200 || colorSensor.blue() > 200 || colorSensor.green() > 200)
+                {
+                    if (colorSensor.red() > colorSensor.blue() && colorSensor.red() > colorSensor.green()) {
+                        color = "Red";
+                    } else if (colorSensor.blue() > colorSensor.red() && colorSensor.blue() > colorSensor.green()) {
+
+                        color = "Blue";
+                    } else if (colorSensor.green() > colorSensor.red() && colorSensor.green() > colorSensor.blue()) {
+                        color = "Yellow";
+                    }
+                } else {
+                    color = "No Ball";
+                }
+
+                telemetry.addData("X: ", gamepad1.left_stick_x);
+                telemetry.addData("Y: ", gamepad1.left_stick_y);
+                telemetry.addData("Color Red", colorSensor.red());
+                telemetry.addData("Color Blue", colorSensor.blue());
+                telemetry.addData("Color Green", colorSensor.green());
+                telemetry.addData("Ball Color", color);
+
+                telemetry.update();
 
 
+//            Omnimovement();
+                //Intakes();
+            }
     }
+
+
+
+
 //    public void Omnimovement()
 //    {
 //        //Uses a Y-Vector and X-Vector, adds them to get
