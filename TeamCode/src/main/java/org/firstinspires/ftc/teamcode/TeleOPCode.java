@@ -41,6 +41,8 @@ public class TeleOPCode extends LinearOpMode
 
     int stepIndex = 1;
 
+    double motorSpeed;
+
 
 
     @Override
@@ -132,68 +134,139 @@ public class TeleOPCode extends LinearOpMode
                 Omnimovement();
                 Intakes();
                 //Shooting();
+                ChangeMotorPowerSpeed();
             }
     }
 
 
-
-
-    public void Omnimovement()
+    public void ChangeMotorPowerSpeed()//changes MOTOR MOVEMENT Speed using M1 and M2
     {
-        //Uses a Y-Vector and X-Vector, adds them to get
-        // forward
-        if (gamepad1.left_stick_y > 0.5 )
+        telemetry.addData("setPowerSpeed", "called");
+        if (gamepad1.dpadUpWasPressed())//M1
         {
-            frontLeft.setPower(-1);
-            frontRight.setPower(-1);
-            backLeft.setPower(-1);
-            backRight.setPower(-1);
+            telemetry.addData("dpad_up", "called");
+            //If motor speed is less then 1 then increase by .1
+//            speedIndex += speedIndex < moveSpeeds.length - 1 ? 1 : 0;
+            if ((motorSpeed < 1))
+            {
+                motorSpeed += 0.2;
+                telemetry.addData("Motor Speed is : ", motorSpeed);
+            }
+            if(motorSpeed > 0.5)
+            {
+                motorSpeed = 1;
+            }
         }
-        // backward
-        else if (gamepad1.left_stick_y < -0.5 )
+        if (gamepad1.dpadDownWasPressed())//M2
         {
-            frontLeft.setPower(1);
-            frontRight.setPower(1);
-            backLeft.setPower(1);
-            backRight.setPower(1);
+            telemetry.addData("dpad_down", "called");
+            //If motor speed is greater then -1 then decrease by .1
+//            speedIndex += speedIndex > 0 ? -1 : 0;
+            if(motorSpeed > 0.3)
+            {
+                motorSpeed-=0.2;
+            }
+            if(motorSpeed > 0.5)
+            {
+                motorSpeed = 0.5;
+            }
+            telemetry.addData("Motor Speed is : ", motorSpeed);
         }
-        // strafe right
-        else if (gamepad1.left_stick_x > 0.5 )
-        {
-            frontLeft.setPower(-1);
-            frontRight.setPower(1);
-            backLeft.setPower(1);
-            backRight.setPower(-1);
+
+//        motorSpeed = moveSpeeds[speedIndex];
+    }
+    public void setMotorsPower(double fLSpeed, double fRSpeed, double bLSpeed, double bRSpeed)//function to set all motors to the same speed
+    {
+        frontLeft.setPower(fLSpeed);
+        frontRight.setPower(fRSpeed);
+        backLeft.setPower(bLSpeed);
+        backRight.setPower(bRSpeed);
+    }
+
+
+    public void Omnimovement() {
+        telemetry.addData("joystick X: ", gamepad1.left_stick_x);
+        telemetry.addData("joystick Y: ", gamepad1.left_stick_y);
+        /* Checking if controller is going right
+        Checks if x is on the right side (x is greater than 0)
+        Checks if y is on the y-axis (y is between 0.5 and -0.5)
+        */
+        if (gamepad1.left_stick_x > 0 && (gamepad1.left_stick_y > -0.5 && gamepad1.left_stick_y < 0.5)) {
+            setMotorsPower(-motorSpeed, motorSpeed, motorSpeed, -motorSpeed);
+            telemetry.addData("Direction: ", "Right");
         }
-        // strafe left
-        else if (gamepad1.left_stick_x < -0.5 )
-        {
-            frontLeft.setPower(1);
-            frontRight.setPower(-1);
-            backLeft.setPower(-1);
-            backRight.setPower(1);
+
+        /* Checking if controller is going left
+        Checks if x is on the left side (x is less than 0)
+        Checks if y is on the y-axis (y is between 0.5 and -0.5)
+        */
+        else if (gamepad1.left_stick_x < 0 && (gamepad1.left_stick_y > -0.5 && gamepad1.left_stick_y < 0.5)) {
+            setMotorsPower(motorSpeed, -motorSpeed, -motorSpeed, motorSpeed);
+            telemetry.addData("Direction: ", "Left");
         }
+        /* Checking if controller is going up
+        Checks if x is on the x-axis (x is between 0.5 and -0.5)
+        Checks if y is on the up side (y is less than 0)
+        */
+        else if (gamepad1.left_stick_y < 0 && (gamepad1.left_stick_x > -0.5 && gamepad1.left_stick_x < 0.5)) {
+            setMotorsPower(-motorSpeed, -motorSpeed, -motorSpeed, -motorSpeed);
+            telemetry.addData("Direction: ", "Up");
+        }
+        /* Checking if controller is going down
+        Checks if x is on the x-axis (x is between 0.5 and -0.5)
+        Checks if y is on the bottom side (y is greater than 0)
+        */
+        else if (gamepad1.left_stick_y > 0 && (gamepad1.left_stick_x > -0.5 && gamepad1.left_stick_x < 0.5)) {
+            setMotorsPower(motorSpeed, motorSpeed, motorSpeed, motorSpeed);
+            telemetry.addData("Direction: ", "Down");
+        }
+        /* Checking if controller is going up-right
+        Checks if x is on the right side (x is greater than 0.5)
+        Checks if y is on the top side (y is less than -0.5)
+        */
+        else if (gamepad1.left_stick_y < -0.5 && gamepad1.left_stick_x > 0.5) {
+            setMotorsPower(-motorSpeed, 0, 0, motorSpeed);
+            telemetry.addData("Direction: ", "Up-Right");
+        }
+        /* Checking if controller is going up-left
+        Checks if x is on the left side (x is less than -0.5)
+        Checks if y is on the top side (y is less than -0.5)
+        */
+        else if (gamepad1.left_stick_y < -0.5 && gamepad1.left_stick_x < -0.5) {
+            setMotorsPower(0, -motorSpeed, -motorSpeed, 0);
+            telemetry.addData("Direction: ", "Up-Left");
+        }
+        /* Checking if controller is going down-right
+        Checks if x is on the right side (x is greater than 0.5)
+        Checks if y is on the bottom side (y is greater than 0.5)
+        */
+        else if (gamepad1.left_stick_y > 0.5 && gamepad1.left_stick_x > 0.5) {
+            setMotorsPower(0, motorSpeed, motorSpeed, 0);
+            telemetry.addData("Direction: ", "Down-Right");
+        }
+        /* Checking if controller is going down-left
+        Checks if x is on the left side (x is less than -0.5)
+        Checks if y is on the bottom side (y is greater than 0.5)
+        */
+        else if (gamepad1.left_stick_y > 0.5 && gamepad1.left_stick_x < -0.5) {
+            setMotorsPower(motorSpeed, 0, 0, motorSpeed);
+            telemetry.addData("Direction: ", "Down-Left");
+        }
+        /* If the controller is going nowhere else, it stops the robot
+        Sets the power to all wheels to 0
+        */
         else
         {
-            frontLeft.setPower(0);
-            frontRight.setPower(0);
-            backLeft.setPower(0);
-            backRight.setPower(0);
+            setMotorsPower(0,0,0,0);
         }
         if(Math.abs(gamepad1.right_stick_x) > 0.25)
         {
-            //turn clock wise
-            frontLeft.setPower(gamepad1.right_stick_x);
-            frontRight.setPower(-gamepad1.right_stick_x);
-            backLeft.setPower(gamepad1.right_stick_x);
-            backRight.setPower(-gamepad1.right_stick_x);
+            //turns the robot
+            setMotorsPower(gamepad1.right_stick_x,-gamepad1.right_stick_x,gamepad1.right_stick_x,-gamepad1.right_stick_x);
         }
         else
         {
-            frontLeft.setPower(0);
-            frontRight.setPower(0);
-            backLeft.setPower(0);
-            backRight.setPower(0);
+            setMotorsPower(0,0,0,0);
         }
 
     }
