@@ -4,6 +4,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.PIDCoefficients;
@@ -20,11 +21,11 @@ public class TeleOPCode extends LinearOpMode
     DcMotor backLeft;
     DcMotor backRight;
 
-    ColorSensor colorSensor;
+    //ColorSensor colorSensor;
 
     DcMotor intake;
 
-    DcMotor shooter;
+    //DcMotorEx shooter;
 
     String color = "";
 
@@ -46,19 +47,19 @@ public class TeleOPCode extends LinearOpMode
     public void runOpMode()
     {
         frontLeft = hardwareMap.get(DcMotor.class, "frontLeft");
-        frontLeft.setDirection(DcMotorSimple.Direction.REVERSE);
         frontRight = hardwareMap.get(DcMotor.class, "frontRight");
+        frontRight.setDirection(DcMotorSimple.Direction.REVERSE);
         backLeft = hardwareMap.get(DcMotor.class, "backLeft");
-        backLeft.setDirection(DcMotorSimple.Direction.REVERSE);
         backRight = hardwareMap.get(DcMotor.class, "backRight");
-        colorSensor = hardwareMap.get(ColorSensor.class, "color");
+        backRight.setDirection(DcMotorSimple.Direction.REVERSE);
+        //colorSensor = hardwareMap.get(ColorSensor.class, "color");
 
         intake = hardwareMap.get(DcMotor.class, "intake");
-        shooter = hardwareMap.get(DcMotor.class, "shooter");
-        shooter.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        //shooter = hardwareMap.get(DcMotorEx.class, "shooter");
+        //shooter.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         PIDFCoefficients pidfCoefficients = new PIDFCoefficients(shooterP, 0 , 0, shooterF);
-        shooter.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidfCoefficients);
+        //shooter.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidfCoefficients);
         waitForStart();
         telemetry.addData("Telemetry", "Called");
 
@@ -69,9 +70,9 @@ public class TeleOPCode extends LinearOpMode
             {
                 telemetry.addData("X: ", gamepad1.left_stick_x);
                 telemetry.addData("Y: ", gamepad1.left_stick_y);
-                telemetry.addData("Color Red", colorSensor.red());
-                telemetry.addData("Color Blue", colorSensor.blue());
-                telemetry.addData("Color Green", colorSensor.green());
+//                telemetry.addData("Color Red", colorSensor.red());
+//                telemetry.addData("Color Blue", colorSensor.blue());
+//                telemetry.addData("Color Green", colorSensor.green());
                 telemetry.addData("Ball Color", color);
 
                 telemetry.update();
@@ -111,26 +112,26 @@ public class TeleOPCode extends LinearOpMode
                     shooterP += stepSizes[stepIndex];
                 }
 
-                PIDFCoefficients pidfCoefficients = new PIDFCoefficients(shooterP, 0, 0, shooterF);
-                shooter.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidfCoefficients);
-                shooter.setVelocity(currentTarget);
+                pidfCoefficients = new PIDFCoefficients(shooterP, 0, 0, shooterF);
+//                shooter.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidfCoefficients);
+//                shooter.setVelocity(currentTarget);
+//
+//                double currVelo = shooter.getVelocity();
+//                double error = currentTarget - currVelo;
 
-                double currVelo = shooter.getVelocity();
-                double error = currentTarget - currVelo;
-
-                telemetry.addData("Target Velo", currentTarget);
-                telemetry.addData("Current Velo", currVelo);
-                telemetry.addData("Error", "%.2f", error);
+//                telemetry.addData("Target Velo", currentTarget);
+//                telemetry.addData("Current Velo", currVelo);
+//                telemetry.addData("Error", "%.2f", error);
                 telemetry.addLine("--------------------------------");
                 telemetry.addData("Tuning P", "%.4f", shooterP);
                 telemetry.addData("Tuning F", "%.4f", shooterF);
                 telemetry.addData("Step Size", "%.4f", stepSizes[stepIndex]);
 
 
-                BallColor();
+                //BallColor();
                 Omnimovement();
                 Intakes();
-                Shooting();
+                //Shooting();
             }
     }
 
@@ -140,21 +141,40 @@ public class TeleOPCode extends LinearOpMode
     public void Omnimovement()
     {
         //Uses a Y-Vector and X-Vector, adds them to get
-        if (Math.abs(gamepad1.left_stick_y) > 0.25  || Math.abs(gamepad1.left_stick_x) >0.25) {
-            double vector_Add =  (-1 * gamepad1.left_stick_y) + gamepad1.left_stick_x;
-            double vector_Sub =  (-1 * gamepad1.left_stick_y) - gamepad1.left_stick_x;
-            int negative_Add = vector_Add<0?-1:1;
-            int negative_sub = vector_Sub<0?-1:1;
-            double f_Vector_add = Math.abs(vector_Add)>1? negative_Add : vector_Add;
-            double f_Vector_sub = Math.abs(vector_Sub)>1? negative_sub : vector_Sub;
-
-
-            frontLeft.setPower(f_Vector_add);
-            frontRight.setPower(f_Vector_sub);
-            backLeft.setPower(f_Vector_sub);
-            backRight.setPower(f_Vector_add);
+        // forward
+        if (gamepad1.left_stick_y > 0.5 )
+        {
+            frontLeft.setPower(-1);
+            frontRight.setPower(-1);
+            backLeft.setPower(-1);
+            backRight.setPower(-1);
         }
-        else{
+        // backward
+        else if (gamepad1.left_stick_y < -0.5 )
+        {
+            frontLeft.setPower(1);
+            frontRight.setPower(1);
+            backLeft.setPower(1);
+            backRight.setPower(1);
+        }
+        // strafe right
+        else if (gamepad1.left_stick_x > 0.5 )
+        {
+            frontLeft.setPower(-1);
+            frontRight.setPower(1);
+            backLeft.setPower(1);
+            backRight.setPower(-1);
+        }
+        // strafe left
+        else if (gamepad1.left_stick_x < -0.5 )
+        {
+            frontLeft.setPower(1);
+            frontRight.setPower(-1);
+            backLeft.setPower(-1);
+            backRight.setPower(1);
+        }
+        else
+        {
             frontLeft.setPower(0);
             frontRight.setPower(0);
             backLeft.setPower(0);
@@ -182,7 +202,7 @@ public class TeleOPCode extends LinearOpMode
     {
         if(gamepad1.rightTriggerWasPressed())
         {
-            intake.setPower(0.5);
+            intake.setPower(1);
         }
         else if(gamepad1.rightTriggerWasReleased())
         {
@@ -190,7 +210,7 @@ public class TeleOPCode extends LinearOpMode
         }
         else if(gamepad1.leftTriggerWasPressed())
         {
-            intake.setPower(-0.5);
+            intake.setPower(-1);
         }
         else if(gamepad1.leftTriggerWasReleased())
         {
@@ -198,44 +218,44 @@ public class TeleOPCode extends LinearOpMode
         }
     }
 
-    public void Shooting()
-    {
-        if(gamepad2.rightTriggerWasPressed())
-        {
-            shooter.setPower(ShootingVelocity);// a number that will work after you test it
-        }
-        else if(gamepad2.rightTriggerWasReleased())
-        {
-            shooter.setPower(0);
-        }
+//    public void Shooting()
+//    {
+//        if(gamepad2.rightTriggerWasPressed())
+//        {
+//            shooter.setPower(ShootingVelocity);// a number that will work after you test it
+//        }
+//        else if(gamepad2.rightTriggerWasReleased())
+//        {
+//            shooter.setPower(0);
+//        }
+//
+//
+//    }
 
-
-    }
-
-
-    public void BallColor()
-    {
-        if (colorSensor.red() > 200 || colorSensor.blue() > 200 || colorSensor.green() > 200)
-        {
-            if (colorSensor.red() > colorSensor.blue() && colorSensor.red() > colorSensor.green())
-            {
-                color = "Red";
-            }
-            else if (colorSensor.blue() > colorSensor.red() && colorSensor.blue() > colorSensor.green())
-            {
-
-                color = "Blue";
-            }
-            else if (colorSensor.green() > colorSensor.red() && colorSensor.green() > colorSensor.blue())
-            {
-                color = "Yellow";
-            }
-        }
-        else
-        {
-            color = "No Ball";
-        }
-    }
+//
+//    public void BallColor()
+//    {
+//        if (colorSensor.red() > 200 || colorSensor.blue() > 200 || colorSensor.green() > 200)
+//        {
+//            if (colorSensor.red() > colorSensor.blue() && colorSensor.red() > colorSensor.green())
+//            {
+//                color = "Red";
+//            }
+//            else if (colorSensor.blue() > colorSensor.red() && colorSensor.blue() > colorSensor.green())
+//            {
+//
+//                color = "Blue";
+//            }
+//            else if (colorSensor.green() > colorSensor.red() && colorSensor.green() > colorSensor.blue())
+//            {
+//                color = "Yellow";
+//            }
+//        }
+//        else
+//        {
+//            color = "No Ball";
+//        }
+//    }
 
 }
 
