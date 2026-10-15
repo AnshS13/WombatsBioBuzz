@@ -13,7 +13,7 @@ import com.qualcomm.robotcore.hardware.configuration.annotations.DigitalIoDevice
 //This is a test comment in the local file
 //Now I am dangerously changing in the remote.
 
-@TeleOp(name = "Testing")
+@TeleOp(name = "Tele-Op Team Code")
 public class TeleOPCode extends LinearOpMode
 {
     DcMotor frontLeft;
@@ -41,7 +41,7 @@ public class TeleOPCode extends LinearOpMode
 
     int stepIndex = 1;
 
-    double motorSpeed;
+    double motorSpeed = 1;
 
 
 
@@ -79,42 +79,42 @@ public class TeleOPCode extends LinearOpMode
 
                 telemetry.update();
 
-                if(gamepad2.triangleWasPressed())
-                {
-                    if(currentTarget == highVelo)
-                    {
-                        currentTarget = lowVelo;
-                    }
-                    else
-                    {
-                        currentTarget = highVelo;
-                    }
-                }
+//                if(gamepad2.triangleWasPressed())
+//                {
+//                    if(currentTarget == highVelo)
+//                    {
+//                        currentTarget = lowVelo;
+//                    }
+//                    else
+//                    {
+//                        currentTarget = highVelo;
+//                    }
+//                }
+//
+//                if(gamepad2.crossWasPressed())
+//                {
+//                    stepIndex = (stepIndex + 1) % stepSizes.length;
+//                }
+//
+//                if(gamepad2.squareWasPressed())
+//                {
+//                   shooterF -= stepSizes[stepIndex];
+//                }
+//                if (gamepad2.circleWasPressed())
+//                {
+//                    shooterF += stepSizes[stepIndex];
+//                }
+//
+//                if(gamepad2.dpadUpWasPressed())
+//                {
+//                    shooterP -= stepSizes[stepIndex];
+//                }
+//                if (gamepad2.dpadDownWasPressed())
+//                {
+//                    shooterP += stepSizes[stepIndex];
+//                }
 
-                if(gamepad2.crossWasPressed())
-                {
-                    stepIndex = (stepIndex + 1) % stepSizes.length;
-                }
-
-                if(gamepad2.squareWasPressed())
-                {
-                   shooterF -= stepSizes[stepIndex];
-                }
-                if (gamepad2.circleWasPressed())
-                {
-                    shooterF += stepSizes[stepIndex];
-                }
-
-                if(gamepad2.dpadUpWasPressed())
-                {
-                    shooterP -= stepSizes[stepIndex];
-                }
-                if (gamepad2.dpadDownWasPressed())
-                {
-                    shooterP += stepSizes[stepIndex];
-                }
-
-                pidfCoefficients = new PIDFCoefficients(shooterP, 0, 0, shooterF);
+//                pidfCoefficients = new PIDFCoefficients(shooterP, 0, 0, shooterF);
 //                shooter.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidfCoefficients);
 //                shooter.setVelocity(currentTarget);
 //
@@ -184,14 +184,17 @@ public class TeleOPCode extends LinearOpMode
     }
 
 
-    public void Omnimovement() {
+    public void Omnimovement()
+    {
         telemetry.addData("joystick X: ", gamepad1.left_stick_x);
         telemetry.addData("joystick Y: ", gamepad1.left_stick_y);
+
         /* Checking if controller is going right
         Checks if x is on the right side (x is greater than 0)
         Checks if y is on the y-axis (y is between 0.5 and -0.5)
         */
-        if (gamepad1.left_stick_x > 0 && (gamepad1.left_stick_y > -0.5 && gamepad1.left_stick_y < 0.5)) {
+        if (gamepad1.left_stick_x > 0 && (gamepad1.left_stick_y > -0.5 && gamepad1.left_stick_y < 0.5))
+        {
             setMotorsPower(-motorSpeed, motorSpeed, motorSpeed, -motorSpeed);
             telemetry.addData("Direction: ", "Right");
         }
@@ -200,7 +203,8 @@ public class TeleOPCode extends LinearOpMode
         Checks if x is on the left side (x is less than 0)
         Checks if y is on the y-axis (y is between 0.5 and -0.5)
         */
-        else if (gamepad1.left_stick_x < 0 && (gamepad1.left_stick_y > -0.5 && gamepad1.left_stick_y < 0.5)) {
+        else if (gamepad1.left_stick_x < 0 && (gamepad1.left_stick_y > -0.5 && gamepad1.left_stick_y < 0.5))
+        {
             setMotorsPower(motorSpeed, -motorSpeed, -motorSpeed, motorSpeed);
             telemetry.addData("Direction: ", "Left");
         }
@@ -208,34 +212,42 @@ public class TeleOPCode extends LinearOpMode
         Checks if x is on the x-axis (x is between 0.5 and -0.5)
         Checks if y is on the up side (y is less than 0)
         */
-        else if (gamepad1.left_stick_y < 0 && (gamepad1.left_stick_x > -0.5 && gamepad1.left_stick_x < 0.5)) {
+        else if (gamepad1.left_stick_y < 0 && (gamepad1.left_stick_x > -0.5 && gamepad1.left_stick_x < 0.5))
+        {
             setMotorsPower(-motorSpeed, -motorSpeed, -motorSpeed, -motorSpeed);
             telemetry.addData("Direction: ", "Up");
         }
+
         /* Checking if controller is going down
         Checks if x is on the x-axis (x is between 0.5 and -0.5)
         Checks if y is on the bottom side (y is greater than 0)
         */
-        else if (gamepad1.left_stick_y > 0 && (gamepad1.left_stick_x > -0.5 && gamepad1.left_stick_x < 0.5)) {
+        else if (gamepad1.left_stick_y > 0 && (gamepad1.left_stick_x > -0.5 && gamepad1.left_stick_x < 0.5))
+        {
             setMotorsPower(motorSpeed, motorSpeed, motorSpeed, motorSpeed);
             telemetry.addData("Direction: ", "Down");
         }
+
         /* Checking if controller is going up-right
         Checks if x is on the right side (x is greater than 0.5)
         Checks if y is on the top side (y is less than -0.5)
         */
-        else if (gamepad1.left_stick_y < -0.5 && gamepad1.left_stick_x > 0.5) {
+        else if (gamepad1.left_stick_y < -0.5 && gamepad1.left_stick_x > 0.5)
+        {
             setMotorsPower(-motorSpeed, 0, 0, motorSpeed);
             telemetry.addData("Direction: ", "Up-Right");
         }
+
         /* Checking if controller is going up-left
         Checks if x is on the left side (x is less than -0.5)
         Checks if y is on the top side (y is less than -0.5)
         */
-        else if (gamepad1.left_stick_y < -0.5 && gamepad1.left_stick_x < -0.5) {
+        else if (gamepad1.left_stick_y < -0.5 && gamepad1.left_stick_x < -0.5)
+        {
             setMotorsPower(0, -motorSpeed, -motorSpeed, 0);
             telemetry.addData("Direction: ", "Up-Left");
         }
+
         /* Checking if controller is going down-right
         Checks if x is on the right side (x is greater than 0.5)
         Checks if y is on the bottom side (y is greater than 0.5)
@@ -244,6 +256,7 @@ public class TeleOPCode extends LinearOpMode
             setMotorsPower(0, motorSpeed, motorSpeed, 0);
             telemetry.addData("Direction: ", "Down-Right");
         }
+
         /* Checking if controller is going down-left
         Checks if x is on the left side (x is less than -0.5)
         Checks if y is on the bottom side (y is greater than 0.5)
@@ -252,6 +265,7 @@ public class TeleOPCode extends LinearOpMode
             setMotorsPower(motorSpeed, 0, 0, motorSpeed);
             telemetry.addData("Direction: ", "Down-Left");
         }
+
         /* If the controller is going nowhere else, it stops the robot
         Sets the power to all wheels to 0
         */
@@ -275,7 +289,7 @@ public class TeleOPCode extends LinearOpMode
     {
         if(gamepad1.rightTriggerWasPressed())
         {
-            intake.setPower(1);
+            intake.setPower(0.6);
         }
         else if(gamepad1.rightTriggerWasReleased())
         {
@@ -283,7 +297,7 @@ public class TeleOPCode extends LinearOpMode
         }
         else if(gamepad1.leftTriggerWasPressed())
         {
-            intake.setPower(-1);
+            intake.setPower(-0.6);
         }
         else if(gamepad1.leftTriggerWasReleased())
         {
