@@ -41,7 +41,7 @@ public class TeleOPCode extends LinearOpMode
 
     int stepIndex = 1;
 
-    double motorSpeed = 1;
+    double motorSpeed = 0.5;
 
 
 
