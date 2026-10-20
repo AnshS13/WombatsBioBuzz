@@ -134,153 +134,89 @@ public class TeleOPCode extends LinearOpMode
                 Omnimovement();
                 Intakes();
                 //Shooting();
-                ChangeMotorPowerSpeed();
             }
     }
 
 
-    public void ChangeMotorPowerSpeed()//changes MOTOR MOVEMENT Speed using M1 and M2
-    {
-        telemetry.addData("setPowerSpeed", "called");
-        if (gamepad1.dpadUpWasPressed())//M1
-        {
-            telemetry.addData("dpad_up", "called");
-            //If motor speed is less then 1 then increase by .1
-//            speedIndex += speedIndex < moveSpeeds.length - 1 ? 1 : 0;
-            if ((motorSpeed < 1))
-            {
-                motorSpeed += 0.2;
-                telemetry.addData("Motor Speed is : ", motorSpeed);
-            }
-            if(motorSpeed > 0.5)
-            {
-                motorSpeed = 1;
-            }
-        }
-        if (gamepad1.dpadDownWasPressed())//M2
-        {
-            telemetry.addData("dpad_down", "called");
-            //If motor speed is greater then -1 then decrease by .1
-//            speedIndex += speedIndex > 0 ? -1 : 0;
-            if(motorSpeed > 0.3)
-            {
-                motorSpeed-=0.2;
-            }
-            if(motorSpeed > 0.5)
-            {
-                motorSpeed = 0.5;
-            }
-            telemetry.addData("Motor Speed is : ", motorSpeed);
-        }
 
 //        motorSpeed = moveSpeeds[speedIndex];
-    }
-    public void setMotorsPower(double fLSpeed, double fRSpeed, double bLSpeed, double bRSpeed)//function to set all motors to the same speed
-    {
-        frontLeft.setPower(fLSpeed);
-        frontRight.setPower(fRSpeed);
-        backLeft.setPower(bLSpeed);
-        backRight.setPower(bRSpeed);
-    }
+
+
+
 
 
     public void Omnimovement()
     {
-        telemetry.addData("joystick X: ", gamepad1.left_stick_x);
-        telemetry.addData("joystick Y: ", gamepad1.left_stick_y);
+        if (Math.abs(gamepad1.left_stick_y) > 0.25  || Math.abs(gamepad1.left_stick_x) >0.25) {
+            //checks to see if the thumbstick is moved at least a quarter in either direction.
 
-        /* Checking if controller is going right
-        Checks if x is on the right side (x is greater than 0)
-        Checks if y is on the y-axis (y is between 0.5 and -0.5)
-        */
-        if (gamepad1.left_stick_x > 0 && (gamepad1.left_stick_y > -0.5 && gamepad1.left_stick_y < 0.5))
-        {
-            setMotorsPower(-motorSpeed, motorSpeed, motorSpeed, -motorSpeed);
-            telemetry.addData("Direction: ", "Right");
-        }
+            double vector_Add = (-gamepad1.left_stick_y) + gamepad1.left_stick_x;
+                /*
+                vector_add first takes the left stick y coordinate and fixes its idiosyncrasy (In
+                that forward is -1.0 and backward is +1.0) by multiplying it by -1. Then through a
+                process known as vector addition, we arrive at the final vector needed for the motor
+                speed.
 
-        /* Checking if controller is going left
-        Checks if x is on the left side (x is less than 0)
-        Checks if y is on the y-axis (y is between 0.5 and -0.5)
-        */
-        else if (gamepad1.left_stick_x < 0 && (gamepad1.left_stick_y > -0.5 && gamepad1.left_stick_y < 0.5))
-        {
-            setMotorsPower(motorSpeed, -motorSpeed, -motorSpeed, motorSpeed);
-            telemetry.addData("Direction: ", "Left");
-        }
-        /* Checking if controller is going up
-        Checks if x is on the x-axis (x is between 0.5 and -0.5)
-        Checks if y is on the up side (y is less than 0)
-        */
-        else if (gamepad1.left_stick_y < 0 && (gamepad1.left_stick_x > -0.5 && gamepad1.left_stick_x < 0.5))
-        {
-            setMotorsPower(-motorSpeed, -motorSpeed, -motorSpeed, -motorSpeed);
-            telemetry.addData("Direction: ", "Up");
-        }
+                !!!!See https://www.youtube.com/watch?v=D5pQCy5dvlc for more information about
+                vector addition in linear algebra!!!!!
 
-        /* Checking if controller is going down
-        Checks if x is on the x-axis (x is between 0.5 and -0.5)
-        Checks if y is on the bottom side (y is greater than 0)
-        */
-        else if (gamepad1.left_stick_y > 0 && (gamepad1.left_stick_x > -0.5 && gamepad1.left_stick_x < 0.5))
-        {
-            setMotorsPower(motorSpeed, motorSpeed, motorSpeed, motorSpeed);
-            telemetry.addData("Direction: ", "Down");
-        }
+                 */
+            double vector_Sub = (-gamepad1.left_stick_y) - gamepad1.left_stick_x;
+                /*
+                vector_sub follows the same rules prior except for one minor detail: while certain
+                motors are facing the correct direction, the motors on the opposite side are facing
+                subsequently facing the opposite direction and need specialized inputs to account
+                for that issue. This fixes the opposite direction issue by subtracting instead of
+                adding (essentially addition but multiplying the x coordinate by -1 [thereby making
+                the x-vector face in the opposite direction]) to account for this very issue.
+                 */
 
-        /* Checking if controller is going up-right
-        Checks if x is on the right side (x is greater than 0.5)
-        Checks if y is on the top side (y is less than -0.5)
-        */
-        else if (gamepad1.left_stick_y < -0.5 && gamepad1.left_stick_x > 0.5)
-        {
-            setMotorsPower(-motorSpeed, 0, 0, motorSpeed);
-            telemetry.addData("Direction: ", "Up-Right");
-        }
+            int negative_Add = vector_Add<0?-1:1;
+            int negative_Sub = vector_Sub<0?-1:1;
+                /*
+                Just checks whether the vectors point in a positive direction and stores its sign.
+                For instance, if negative_Add is greater than 0, then it is positive and gets 1.
+                This is done for when the vector addition results in a number that is greater than
+                the bounds of the setPower function (that being from -1 to 1). This becomes
+                important when pushing the vector information into the set Power function
 
-        /* Checking if controller is going up-left
-        Checks if x is on the left side (x is less than -0.5)
-        Checks if y is on the top side (y is less than -0.5)
-        */
-        else if (gamepad1.left_stick_y < -0.5 && gamepad1.left_stick_x < -0.5)
-        {
-            setMotorsPower(0, -motorSpeed, -motorSpeed, 0);
-            telemetry.addData("Direction: ", "Up-Left");
-        }
+                -----------------------------------------------------------------------------------
+                IMPORTANT!
 
-        /* Checking if controller is going down-right
-        Checks if x is on the right side (x is greater than 0.5)
-        Checks if y is on the bottom side (y is greater than 0.5)
-        */
-        else if (gamepad1.left_stick_y > 0.5 && gamepad1.left_stick_x > 0.5) {
-            setMotorsPower(0, motorSpeed, motorSpeed, 0);
-            telemetry.addData("Direction: ", "Down-Right");
-        }
+                The '?' character used is called a ternary operator. This operator follows the
+                format of "(Boolean) ? (Option 1) : (Option 2)". You can think of this as a quick
+                and short if and else statement--as that is what is is. The colon(':') essentially
+                acts like an else (Otherwise an OR colloquial language). It First asks the question
+                "Is this boolean statement true?" if it is true, then Option 1 is returned; if not,
+                then Option 2 is returned. For clarification, the boolean statement can be anything
+                as long as it results as a boolean, such as a comparative operator (<,>,==, ect.),
+                functions, and primitives.
+                -----------------------------------------------------------------------------------
+                 */
 
-        /* Checking if controller is going down-left
-        Checks if x is on the left side (x is less than -0.5)
-        Checks if y is on the bottom side (y is greater than 0.5)
-        */
-        else if (gamepad1.left_stick_y > 0.5 && gamepad1.left_stick_x < -0.5) {
-            setMotorsPower(motorSpeed, 0, 0, motorSpeed);
-            telemetry.addData("Direction: ", "Down-Left");
-        }
 
-        /* If the controller is going nowhere else, it stops the robot
-        Sets the power to all wheels to 0
-        */
-        else
-        {
-            setMotorsPower(0,0,0,0);
+            frontLeft.setPower(Math.abs(vector_Add)>1? negative_Add : vector_Add);
+            frontRight.setPower(Math.abs(vector_Sub)>1? negative_Sub : vector_Sub);
+            backLeft.setPower(Math.abs(vector_Sub)>1? negative_Sub : vector_Sub);
+            backRight.setPower(Math.abs(vector_Add)>1? negative_Add : vector_Add);
+                /*
+                Here the ternary operator is used to check if the absolute value of the vector is
+                greater than 1. For instance, if the function setPower represented a circle with a
+                radius of 1 centered around the origin (0,0), then this comparison just checks if
+                the vector ends at a point outside the circle. If in the case that it is greater
+                than 1, then it defaults to the default value saved as negative_Add in order to stay
+                Within bounds. No important information is lost in this process as the ONLY CASE IN
+                WHICH A VECTOR HAS A MAGNITUDE GREATER THAN 1 IS IN EITHER ADDITION OR SUBTRACTION,
+                NEVER BOTH. The exact same process is followed for both vector_Add and vector_Sub,
+                the only difference being that each is speciallized for its own vector information.
+                 */
         }
-        if(Math.abs(gamepad1.right_stick_x) > 0.25)
-        {
-            //turns the robot
-            setMotorsPower(gamepad1.right_stick_x,-gamepad1.right_stick_x,gamepad1.right_stick_x,-gamepad1.right_stick_x);
-        }
-        else
-        {
-            setMotorsPower(0,0,0,0);
+        else{
+            frontLeft.setPower(0);
+            frontRight.setPower(0);
+            backLeft.setPower(0);
+            backRight.setPower(0);
+            //sets motors to zero if joystick is not moved.
         }
 
     }
@@ -289,7 +225,7 @@ public class TeleOPCode extends LinearOpMode
     {
         if(gamepad1.rightTriggerWasPressed())
         {
-            intake.setPower(0.6);
+            intake.setPower(1);
         }
         else if(gamepad1.rightTriggerWasReleased())
         {
@@ -297,7 +233,7 @@ public class TeleOPCode extends LinearOpMode
         }
         else if(gamepad1.leftTriggerWasPressed())
         {
-            intake.setPower(-0.6);
+            intake.setPower(-1)                                                                                                                                                                                                 ;
         }
         else if(gamepad1.leftTriggerWasReleased())
         {
