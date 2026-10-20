@@ -225,7 +225,7 @@ public class TeleOPCode extends LinearOpMode
     {
         if(gamepad1.rightTriggerWasPressed())
         {
-            intake.setPower(1);
+            intake.setPower(-1);
         }
         else if(gamepad1.rightTriggerWasReleased())
         {
@@ -233,7 +233,7 @@ public class TeleOPCode extends LinearOpMode
         }
         else if(gamepad1.leftTriggerWasPressed())
         {
-            intake.setPower(-1)                                                                                                                                                                                                 ;
+            intake.setPower(1)                                                                                                                                                                                                 ;
         }
         else if(gamepad1.leftTriggerWasReleased())
         {
