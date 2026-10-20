@@ -219,6 +219,22 @@ public class TeleOPCode extends LinearOpMode
             //sets motors to zero if joystick is not moved.
         }
 
+        if(Math.abs(gamepad1.right_stick_x) > 0.5)
+        {
+            frontLeft.setPower(gamepad1.right_stick_x);
+            frontRight.setPower(-gamepad1.right_stick_x);
+            backLeft.setPower(gamepad1.right_stick_x);
+            backRight.setPower(-gamepad1.right_stick_x);
+        }
+        else
+        {
+            frontLeft.setPower(0);
+            frontRight.setPower(0);
+            backLeft.setPower(0);
+            backRight.setPower(0);
+        }
+
+
     }
 
     public void Intakes()
