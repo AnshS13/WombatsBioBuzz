@@ -147,10 +147,12 @@ public class TeleOPCode extends LinearOpMode
 
     public void Omnimovement()
     {
-        if (Math.abs(gamepad1.left_stick_y) > 0.25  || Math.abs(gamepad1.left_stick_x) >0.25) {
+        if (Math.abs(gamepad1.left_stick_y) > 0.25  || Math.abs(gamepad1.left_stick_x) >0.25||
+            Math.abs(gamepad1.right_stick_x) > 0.2 ){
             //checks to see if the thumbstick is moved at least a quarter in either direction.
 
-            double vector_Add = (-gamepad1.left_stick_y) + gamepad1.left_stick_x;
+            double frontLeft_Vector =  -gamepad1.left_stick_y + gamepad1.left_stick_x
+                    + gamepad1.right_stick_x;
                 /*
                 vector_add first takes the left stick y coordinate and fixes its idiosyncrasy (In
                 that forward is -1.0 and backward is +1.0) by multiplying it by -1. Then through a
@@ -161,7 +163,9 @@ public class TeleOPCode extends LinearOpMode
                 vector addition in linear algebra!!!!!
 
                  */
-            double vector_Sub = (-gamepad1.left_stick_y) - gamepad1.left_stick_x;
+            double backRight_Vector = (-gamepad1.left_stick_y) + gamepad1.left_stick_x - gamepad1.right_stick_x;
+
+            double frontRight_Vector = -gamepad1.left_stick_y - gamepad1.left_stick_x - gamepad1.right_stick_x;
                 /*
                 vector_sub follows the same rules prior except for one minor detail: while certain
                 motors are facing the correct direction, the motors on the opposite side are facing
@@ -170,9 +174,20 @@ public class TeleOPCode extends LinearOpMode
                 adding (essentially addition but multiplying the x coordinate by -1 [thereby making
                 the x-vector face in the opposite direction]) to account for this very issue.
                  */
+            double backLeft_Vector = -gamepad1.left_stick_y - gamepad1.left_stick_x + gamepad1.right_stick_x;
 
-            int negative_Add = vector_Add<0?-1:1;
-            int negative_Sub = vector_Sub<0?-1:1;
+            if (Math.abs(frontLeft_Vector)>1) {
+                frontLeft_Vector = frontLeft_Vector < 0 ? -1 : 1;
+            }
+            if (Math.abs(backLeft_Vector)>1) {
+                backLeft_Vector = backLeft_Vector < 0 ? -1 : 1;
+            }
+            if (Math.abs(frontRight_Vector)>1) {
+                frontRight_Vector = frontRight_Vector < 0 ? -1 : 1;
+            }
+            if (Math.abs(backRight_Vector)>1) {
+                backRight_Vector = backRight_Vector < 0 ? -1 : 1;
+            }
                 /*
                 Just checks whether the vectors point in a positive direction and stores its sign.
                 For instance, if negative_Add is greater than 0, then it is positive and gets 1.
@@ -193,13 +208,7 @@ public class TeleOPCode extends LinearOpMode
                 functions, and primitives.
                 -----------------------------------------------------------------------------------
                  */
-
-
-            frontLeft.setPower(Math.abs(vector_Add)>1? negative_Add : vector_Add);
-            frontRight.setPower(Math.abs(vector_Sub)>1? negative_Sub : vector_Sub);
-            backLeft.setPower(Math.abs(vector_Sub)>1? negative_Sub : vector_Sub);
-            backRight.setPower(Math.abs(vector_Add)>1? negative_Add : vector_Add);
-                /*
+            /*
                 Here the ternary operator is used to check if the absolute value of the vector is
                 greater than 1. For instance, if the function setPower represented a circle with a
                 radius of 1 centered around the origin (0,0), then this comparison just checks if
@@ -207,9 +216,14 @@ public class TeleOPCode extends LinearOpMode
                 than 1, then it defaults to the default value saved as negative_Add in order to stay
                 Within bounds. No important information is lost in this process as the ONLY CASE IN
                 WHICH A VECTOR HAS A MAGNITUDE GREATER THAN 1 IS IN EITHER ADDITION OR SUBTRACTION,
-                NEVER BOTH. The exact same process is followed for both vector_Add and vector_Sub,
-                the only difference being that each is speciallized for its own vector information.
+                NEVER BOTH. The exact same process is followed for both frontLeft_Vector and frontRight_Vector,
+                the only difference being that each is specialized for its own vector information.
                  */
+            frontLeft.setPower(frontLeft_Vector);
+            frontRight.setPower(frontRight_Vector);
+            backLeft.setPower(backLeft_Vector);
+            backRight.setPower(backRight_Vector);
+
         }
         else{
             frontLeft.setPower(0);
@@ -219,6 +233,7 @@ public class TeleOPCode extends LinearOpMode
             //sets motors to zero if joystick is not moved.
         }
 
+        /*
         if(Math.abs(gamepad1.right_stick_x) > 0.5)
         {
             frontLeft.setPower(gamepad1.right_stick_x);
@@ -234,6 +249,8 @@ public class TeleOPCode extends LinearOpMode
             backRight.setPower(0);
         }
 
+
+         */
 
     }
 
@@ -257,19 +274,22 @@ public class TeleOPCode extends LinearOpMode
         }
     }
 
-//    public void Shooting()
-//    {
-//        if(gamepad2.rightTriggerWasPressed())
-//        {
-//            shooter.setPower(ShootingVelocity);// a number that will work after you test it
-//        }
-//        else if(gamepad2.rightTriggerWasReleased())
-//        {
-//            shooter.setPower(0);
-//        }
-//
-//
-//    }
+    /*
+    public void Shooting()
+    {
+        if(gamepad2.rightTriggerWasPressed())
+        {
+            shooter.setPower(ShootingVelocity);// a number that will work after you test it
+        }
+        else if(gamepad2.rightTriggerWasReleased())
+        {
+            shooter.setPower(0);
+        }
+
+
+    }
+
+     */
 
 //
 //    public void BallColor()
