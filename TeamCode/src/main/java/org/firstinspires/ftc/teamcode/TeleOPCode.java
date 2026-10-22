@@ -42,7 +42,8 @@ public class TeleOPCode extends LinearOpMode
     int stepIndex = 1;
 
     double motorSpeed = 1;
-
+    DcMotor turretMotor;
+    DcMotor flywheel;
 
 
     @Override
@@ -54,7 +55,11 @@ public class TeleOPCode extends LinearOpMode
         backLeft = hardwareMap.get(DcMotor.class, "backLeft");
         backRight = hardwareMap.get(DcMotor.class, "backRight");
         backRight.setDirection(DcMotorSimple.Direction.REVERSE);
+        turretMotor = hardwareMap.get(DcMotor.class, "Turret Motor"); // changed this
+        // this could be a servo. Khaian said it was a motor but double-check.
+        flywheel = hardwareMap.get(DcMotor.class, "flywheel"); 
         //colorSensor = hardwareMap.get(ColorSensor.class, "color");
+        
 
         intake = hardwareMap.get(DcMotor.class, "intake");
         //shooter = hardwareMap.get(DcMotorEx.class, "shooter");
@@ -133,6 +138,9 @@ public class TeleOPCode extends LinearOpMode
                 //BallColor();
                 Omnimovement();
                 Intakes();
+                // both of these classes are untested as of 10/22/2026 at 2:21pm
+                Turret();
+                Flywheel();
                 //Shooting();
             }
     }
@@ -253,7 +261,35 @@ public class TeleOPCode extends LinearOpMode
          */
 
     }
+    
+    // this is untested as of 10/22/2026 at 2:21pm
+    public void Turret() // changed this
+    {
+        if(gamepad1.rightBumperWasPressed())
+        {
+            turretMotor.setPower(0.3);
+        }
+        else if(gamepad2.leftBumperWasPressed())
+        {
+            turretMotor.setPower(-0.3);
+        }
+        else
+        {
+            turretMotor.setPower(0);
+        }
+    }
 
+    public void Flywheel()
+    {
+        if(gamepad1.aWasPressed())
+        {
+            flywheel.setPower(0.99);
+        }
+        else
+        {
+            flywheel.setPower(0);
+        }
+    }
     public void Intakes()
     {
         if(gamepad1.rightTriggerWasPressed())
