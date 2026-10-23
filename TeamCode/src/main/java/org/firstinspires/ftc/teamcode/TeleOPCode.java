@@ -44,7 +44,7 @@ public class TeleOPCode extends LinearOpMode
 
     double motorSpeed = 1;
     DcMotor turretMotor;
-    DcMotor flywheel;
+    DcMotorEx flywheel;
 
 
     @Override
@@ -56,9 +56,10 @@ public class TeleOPCode extends LinearOpMode
         backLeft = hardwareMap.get(DcMotor.class, "backLeft");
         backRight = hardwareMap.get(DcMotor.class, "backRight");
         backRight.setDirection(DcMotorSimple.Direction.REVERSE);
-        turretMotor = hardwareMap.get(DcMotor.class, "Turret Motor"); // changed this
+        turretMotor = hardwareMap.get(DcMotor.class, "turretMotor"); // changed this
         // this could be a servo. Khaian said it was a motor but double-check.
-        flywheel = hardwareMap.get(DcMotor.class, "flywheel"); 
+        flywheel = hardwareMap.get(DcMotorEx.class, "flywheel");
+        flywheel.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         //colorSensor = hardwareMap.get(ColorSensor.class, "color");
         
 
@@ -140,6 +141,7 @@ public class TeleOPCode extends LinearOpMode
                 //BallColor();
                 Omnimovement();
                 Intakes();
+                rampMovement();
                 // both of these classes are untested as of 10/22/2026 at 2:21pm
                 Turret();
                 Flywheel();
@@ -286,11 +288,11 @@ public class TeleOPCode extends LinearOpMode
     {
         if(gamepad2.right_trigger >= 0.5)
         {
-            flywheel.setPower(0.92);
+            flywheel.setVelocity(1150);
         }
         else if(gamepad2.right_trigger <= 0.5)
         {
-            flywheel.setPower(0);
+            flywheel.setVelocity(0);
         }
     }
     public void Intakes()
@@ -317,11 +319,11 @@ public class TeleOPCode extends LinearOpMode
     {
         if(gamepad1.crossWasPressed())
         {
-            flowerRamp.setPosition(100);
+            flowerRamp.setPosition(0.08);
         }
         else if (gamepad1.triangleWasPressed())
         {
-            flowerRamp.setPosition(50);
+            flowerRamp.setPosition(1);
         }
     }
 
