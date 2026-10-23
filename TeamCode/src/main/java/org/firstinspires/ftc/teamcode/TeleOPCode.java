@@ -9,6 +9,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.PIDCoefficients;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.configuration.annotations.DigitalIoDeviceType;
 //This is a test comment in the local file
 //Now I am dangerously changing in the remote.
@@ -26,7 +27,7 @@ public class TeleOPCode extends LinearOpMode
     DcMotor intake;
 
     //DcMotorEx shooter;
-
+    Servo flowerRamp;
     String color = "";
 
     double shooterP = 0;
@@ -62,11 +63,11 @@ public class TeleOPCode extends LinearOpMode
         
 
         intake = hardwareMap.get(DcMotor.class, "intake");
-        //shooter = hardwareMap.get(DcMotorEx.class, "shooter");
-        //shooter.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        flowerRamp = hardwareMap.get(Servo.class, "flowerRamp");
 
         PIDFCoefficients pidfCoefficients = new PIDFCoefficients(shooterP, 0 , 0, shooterF);
-        //shooter.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidfCoefficients);
+        //flywheel.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidfCoefficients);
         waitForStart();
         telemetry.addData("Telemetry", "Called");
 
@@ -120,10 +121,10 @@ public class TeleOPCode extends LinearOpMode
 //                }
 
 //                pidfCoefficients = new PIDFCoefficients(shooterP, 0, 0, shooterF);
-//                shooter.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidfCoefficients);
-//                shooter.setVelocity(currentTarget);
+//                flywheel.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidfCoefficients);
+//                flywheel.setVelocity(currentTarget);
 //
-//                double currVelo = shooter.getVelocity();
+//                double currVelo = flywheel.getVelocity();
 //                double error = currentTarget - currVelo;
 
 //                telemetry.addData("Target Velo", currentTarget);
@@ -133,6 +134,7 @@ public class TeleOPCode extends LinearOpMode
                 telemetry.addData("Tuning P", "%.4f", shooterP);
                 telemetry.addData("Tuning F", "%.4f", shooterF);
                 telemetry.addData("Step Size", "%.4f", stepSizes[stepIndex]);
+                telemetry.addData("Ramp Servo Position" , flowerRamp.getPosition());
 
 
                 //BallColor();
@@ -184,7 +186,8 @@ public class TeleOPCode extends LinearOpMode
                  */
             double backLeft_Vector = -gamepad1.left_stick_y - gamepad1.left_stick_x + gamepad1.right_stick_x;
 
-            if (Math.abs(frontLeft_Vector)>1) {
+            if (Math.abs(frontLeft_Vector)>1)
+            {
                 frontLeft_Vector = frontLeft_Vector < 0 ? -1 : 1;
             }
             if (Math.abs(backLeft_Vector)>1) {
@@ -265,11 +268,11 @@ public class TeleOPCode extends LinearOpMode
     // this is untested as of 10/22/2026 at 2:21pm
     public void Turret() // changed this
     {
-        if(gamepad1.rightBumperWasPressed())
+        if(gamepad2.right_bumper)
         {
             turretMotor.setPower(0.3);
         }
-        else if(gamepad2.leftBumperWasPressed())
+        else if(gamepad2.left_bumper)
         {
             turretMotor.setPower(-0.3);
         }
@@ -281,11 +284,11 @@ public class TeleOPCode extends LinearOpMode
 
     public void Flywheel()
     {
-        if(gamepad1.aWasPressed())
+        if(gamepad2.right_trigger >= 0.5)
         {
-            flywheel.setPower(0.99);
+            flywheel.setPower(0.92);
         }
-        else
+        else if(gamepad2.right_trigger <= 0.5)
         {
             flywheel.setPower(0);
         }
@@ -310,22 +313,19 @@ public class TeleOPCode extends LinearOpMode
         }
     }
 
-    /*
-    public void Shooting()
+    public void rampMovement()
     {
-        if(gamepad2.rightTriggerWasPressed())
+        if(gamepad1.crossWasPressed())
         {
-            shooter.setPower(ShootingVelocity);// a number that will work after you test it
+            flowerRamp.setPosition(100);
         }
-        else if(gamepad2.rightTriggerWasReleased())
+        else if (gamepad1.triangleWasPressed())
         {
-            shooter.setPower(0);
+            flowerRamp.setPosition(50);
         }
-
-
     }
 
-     */
+
 
 //
 //    public void BallColor()
