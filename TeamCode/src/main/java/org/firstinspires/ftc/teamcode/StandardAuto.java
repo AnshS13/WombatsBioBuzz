@@ -66,10 +66,11 @@ public class StandardAuto extends LinearOpMode {
         if (opModeIsActive())
         {
             //shooter.setPower(1267);
-            intake.setPower(1267);
+            //intake.setPower(1267);
             sleep(3000);
             //shooter.setPower(0);
-            turnLeft(1000);
+            turnLeft(700);
+            moveForwards(1500);
 
         }
     }
@@ -84,6 +85,12 @@ public class StandardAuto extends LinearOpMode {
     public void turnLeft(int time)
     {
         setMotorsPower(0,0.5,0.5,0);
+        sleep(time);
+        setMotorsPower(0,0,0,0);
+    }
+    public void moveForwards(int time)
+    {
+        setMotorsPower(1,1,1,1);
         sleep(time);
         setMotorsPower(0,0,0,0);
     }
