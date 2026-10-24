@@ -15,7 +15,7 @@ import com.qualcomm.robotcore.hardware.configuration.annotations.DigitalIoDevice
 //Now I am dangerously changing in the remote.
 
 @Autonomous(name = "Standard Auton Code", group = "Autonomous")
-public class StandardAuto extends LinearOpMode {
+public class     StandardAuto extends LinearOpMode {
     DcMotor frontLeft;
     DcMotor frontRight;
     DcMotor backLeft;
@@ -68,7 +68,6 @@ public class StandardAuto extends LinearOpMode {
             //intake.setPower(1267);
             sleep(3000);
             //shooter.setVelocity(0);
-            turnLeft(700);
             moveForwards(1500);
 
         }
