@@ -24,8 +24,7 @@ public class StandardAuto extends LinearOpMode {
     //ColorSensor colorSensor;
 
     DcMotor intake;
-
-   // DcMotorEx shooter;
+    DcMotorEx shooter;
 
     String color = "";
 
@@ -65,10 +64,10 @@ public class StandardAuto extends LinearOpMode {
 
         if (opModeIsActive())
         {
-            //shooter.setPower(1267);
+            //shooter.setVelocity(1267);
             //intake.setPower(1267);
             sleep(3000);
-            //shooter.setPower(0);
+            //shooter.setVelocity(0);
             turnLeft(700);
             moveForwards(1500);
 
