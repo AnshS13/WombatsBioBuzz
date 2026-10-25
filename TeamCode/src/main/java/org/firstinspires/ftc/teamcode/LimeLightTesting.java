@@ -282,7 +282,7 @@ public class LimeLightTesting extends LinearOpMode
     public void Turret()
     {
         // Toggle auto-aim
-        if (gamepad2.aWasPressed())
+        if (gamepad2.squareWasPressed())
         {
             autoAim = !autoAim;
         }
