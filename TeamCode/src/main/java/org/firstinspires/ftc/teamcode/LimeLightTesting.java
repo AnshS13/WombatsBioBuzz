@@ -50,8 +50,8 @@ public class LimeLightTesting extends LinearOpMode
     DcMotorEx flywheel;
     Limelight3A limelight;
     boolean autoAim = false;
-    double turretKp = 0.015;
-    double turretTolerance = 1.0;
+    double speedModifier = 0.015;
+    double degreeOfError = 1.0;
 
 
     @Override
@@ -278,7 +278,6 @@ public class LimeLightTesting extends LinearOpMode
 
     }
 
-    // this is untested as of 10/22/2026 at 2:21pm
     public void Turret()
     {
         // Toggle auto-aim
@@ -293,14 +292,14 @@ public class LimeLightTesting extends LinearOpMode
 
             if (result != null && result.isValid())
             {
-                double tx = result.getTx();
+                double horizontalOffset = result.getTx();
 
                 telemetry.addData("Auto Aim", "Active");
-                telemetry.addData("AprilTag TX", "%.2f", tx);
+                telemetry.addData("AprilTag TX", "%.2f", horizontalOffset);
 
-                if (Math.abs(tx) > turretTolerance)
+                if (Math.abs(horizontalOffset) > degreeOfError)
                 {
-                    double turretPower = Range.clip(tx * turretKp, -0.3, 0.3);
+                    double turretPower = Range.clip(horizontalOffset * speedModifier, -0.3, 0.3);
 
                     turretMotor.setPower(turretPower);
                 }
