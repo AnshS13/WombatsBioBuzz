@@ -68,7 +68,7 @@ public class     StandardAuto extends LinearOpMode {
             //intake.setPower(1267);
             sleep(3000);
             //shooter.setVelocity(0);
-            moveForwards(1500);
+            moveForwards(6000);
 
         }
     }
@@ -77,9 +77,12 @@ public class     StandardAuto extends LinearOpMode {
         //set the powers to drive the robot
         frontLeft.setPower(fLSpeed);
         frontRight.setPower(fRSpeed);
-        backLeft.setPower(-rLSpeed);
-        backRight.setPower(-rRSpeed);
+        backLeft.setPower(rLSpeed);
+        backRight.setPower(rRSpeed);
     }
+
+
+
     public void turnLeft(int time)
     {
         setMotorsPower(0,0.5,0.5,0);

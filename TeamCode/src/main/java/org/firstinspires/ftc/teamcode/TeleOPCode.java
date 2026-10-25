@@ -83,6 +83,7 @@ public class TeleOPCode extends LinearOpMode
 //                telemetry.addData("Color Blue", colorSensor.blue());
 //                telemetry.addData("Color Green", colorSensor.green());
                 telemetry.addData("Ball Color", color);
+                telemetry.addData("Flyhweel Speed", flywheel.getVelocity());
 
                 telemetry.update();
 
@@ -202,7 +203,7 @@ public class TeleOPCode extends LinearOpMode
                 backRight_Vector = backRight_Vector < 0 ? -1 : 1;
             }
                 /*
-                Just checks whether the vectors point in a positive direction and stores its sign.
+                Just checks whethers the vectors point in a positive direction and stores its sign.
                 For instance, if negative_Add is greater than 0, then it is positive and gets 1.
                 This is done for when the vector addition results in a number that is greater than
                 the bounds of the setPower function (that being from -1 to 1). This becomes
@@ -232,10 +233,10 @@ public class TeleOPCode extends LinearOpMode
                 NEVER BOTH. The exact same process is followed for both frontLeft_Vector and frontRight_Vector,
                 the only difference being that each is specialized for its own vector information.
                  */
-            frontLeft.setPower(frontLeft_Vector);
-            frontRight.setPower(frontRight_Vector);
-            backLeft.setPower(backLeft_Vector);
-            backRight.setPower(backRight_Vector);
+            frontLeft.setPower(frontLeft_Vector * 0.75);
+            frontRight.setPower(frontRight_Vector * 0.75);
+            backLeft.setPower(backLeft_Vector * 0.75);
+            backRight.setPower(backRight_Vector * 0.75);
 
         }
         else{
@@ -288,7 +289,7 @@ public class TeleOPCode extends LinearOpMode
     {
         if(gamepad2.right_trigger >= 0.5)
         {
-            flywheel.setVelocity(1150);
+            flywheel.setVelocity(1750);
         }
         else if(gamepad2.right_trigger <= 0.5)
         {
@@ -307,7 +308,7 @@ public class TeleOPCode extends LinearOpMode
         }
         else if(gamepad1.leftTriggerWasPressed())
         {
-            intake.setPower(1)                                                                                                                                                                                                 ;
+            intake.setPower(0.3)                                                                                                                                                                                                 ;
         }
         else if(gamepad1.leftTriggerWasReleased())
         {
@@ -326,6 +327,8 @@ public class TeleOPCode extends LinearOpMode
             flowerRamp.setPosition(1);
         }
     }
+
+
 
 
 
