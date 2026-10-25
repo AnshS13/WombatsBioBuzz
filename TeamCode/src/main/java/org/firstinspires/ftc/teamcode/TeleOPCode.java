@@ -9,6 +9,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.PIDCoefficients;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.configuration.annotations.DigitalIoDeviceType;
 //This is a test comment in the local file
 //Now I am dangerously changing in the remote.
@@ -26,7 +27,7 @@ public class TeleOPCode extends LinearOpMode
     DcMotor intake;
 
     //DcMotorEx shooter;
-
+    Servo flowerRamp;
     String color = "";
 
     double shooterP = 0;
@@ -42,7 +43,8 @@ public class TeleOPCode extends LinearOpMode
     int stepIndex = 1;
 
     double motorSpeed = 1;
-
+    DcMotor turretMotor;
+    DcMotorEx flywheel;
 
 
     @Override
@@ -54,14 +56,19 @@ public class TeleOPCode extends LinearOpMode
         backLeft = hardwareMap.get(DcMotor.class, "backLeft");
         backRight = hardwareMap.get(DcMotor.class, "backRight");
         backRight.setDirection(DcMotorSimple.Direction.REVERSE);
+        turretMotor = hardwareMap.get(DcMotor.class, "turretMotor"); // changed this
+        // this could be a servo. Khaian said it was a motor but double-check.
+        flywheel = hardwareMap.get(DcMotorEx.class, "flywheel");
+        flywheel.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         //colorSensor = hardwareMap.get(ColorSensor.class, "color");
+        
 
         intake = hardwareMap.get(DcMotor.class, "intake");
-        //shooter = hardwareMap.get(DcMotorEx.class, "shooter");
-        //shooter.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        flowerRamp = hardwareMap.get(Servo.class, "flowerRamp");
 
         PIDFCoefficients pidfCoefficients = new PIDFCoefficients(shooterP, 0 , 0, shooterF);
-        //shooter.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidfCoefficients);
+        //flywheel.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidfCoefficients);
         waitForStart();
         telemetry.addData("Telemetry", "Called");
 
@@ -76,6 +83,7 @@ public class TeleOPCode extends LinearOpMode
 //                telemetry.addData("Color Blue", colorSensor.blue());
 //                telemetry.addData("Color Green", colorSensor.green());
                 telemetry.addData("Ball Color", color);
+                telemetry.addData("Flyhweel Speed", flywheel.getVelocity());
 
                 telemetry.update();
 
@@ -115,10 +123,10 @@ public class TeleOPCode extends LinearOpMode
 //                }
 
 //                pidfCoefficients = new PIDFCoefficients(shooterP, 0, 0, shooterF);
-//                shooter.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidfCoefficients);
-//                shooter.setVelocity(currentTarget);
+//                flywheel.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidfCoefficients);
+//                flywheel.setVelocity(currentTarget);
 //
-//                double currVelo = shooter.getVelocity();
+//                double currVelo = flywheel.getVelocity();
 //                double error = currentTarget - currVelo;
 
 //                telemetry.addData("Target Velo", currentTarget);
@@ -128,11 +136,16 @@ public class TeleOPCode extends LinearOpMode
                 telemetry.addData("Tuning P", "%.4f", shooterP);
                 telemetry.addData("Tuning F", "%.4f", shooterF);
                 telemetry.addData("Step Size", "%.4f", stepSizes[stepIndex]);
+                telemetry.addData("Ramp Servo Position" , flowerRamp.getPosition());
 
 
                 //BallColor();
                 Omnimovement();
                 Intakes();
+                rampMovement();
+                // both of these classes are untested as of 10/22/2026 at 2:21pm
+                Turret();
+                Flywheel();
                 //Shooting();
             }
     }
@@ -176,7 +189,8 @@ public class TeleOPCode extends LinearOpMode
                  */
             double backLeft_Vector = -gamepad1.left_stick_y - gamepad1.left_stick_x + gamepad1.right_stick_x;
 
-            if (Math.abs(frontLeft_Vector)>1) {
+            if (Math.abs(frontLeft_Vector)>1)
+            {
                 frontLeft_Vector = frontLeft_Vector < 0 ? -1 : 1;
             }
             if (Math.abs(backLeft_Vector)>1) {
@@ -189,7 +203,7 @@ public class TeleOPCode extends LinearOpMode
                 backRight_Vector = backRight_Vector < 0 ? -1 : 1;
             }
                 /*
-                Just checks whether the vectors point in a positive direction and stores its sign.
+                Just checks whethers the vectors point in a positive direction and stores its sign.
                 For instance, if negative_Add is greater than 0, then it is positive and gets 1.
                 This is done for when the vector addition results in a number that is greater than
                 the bounds of the setPower function (that being from -1 to 1). This becomes
@@ -219,10 +233,10 @@ public class TeleOPCode extends LinearOpMode
                 NEVER BOTH. The exact same process is followed for both frontLeft_Vector and frontRight_Vector,
                 the only difference being that each is specialized for its own vector information.
                  */
-            frontLeft.setPower(frontLeft_Vector);
-            frontRight.setPower(frontRight_Vector);
-            backLeft.setPower(backLeft_Vector);
-            backRight.setPower(backRight_Vector);
+            frontLeft.setPower(frontLeft_Vector * 0.75);
+            frontRight.setPower(frontRight_Vector * 0.75);
+            backLeft.setPower(backLeft_Vector * 0.75);
+            backRight.setPower(backRight_Vector * 0.75);
 
         }
         else{
@@ -253,7 +267,35 @@ public class TeleOPCode extends LinearOpMode
          */
 
     }
+    
+    // this is untested as of 10/22/2026 at 2:21pm
+    public void Turret() // changed this
+    {
+        if(gamepad2.right_bumper)
+        {
+            turretMotor.setPower(0.3);
+        }
+        else if(gamepad2.left_bumper)
+        {
+            turretMotor.setPower(-0.3);
+        }
+        else
+        {
+            turretMotor.setPower(0);
+        }
+    }
 
+    public void Flywheel()
+    {
+        if(gamepad2.right_trigger >= 0.5)
+        {
+            flywheel.setVelocity(1750);
+        }
+        else if(gamepad2.right_trigger <= 0.5)
+        {
+            flywheel.setVelocity(0);
+        }
+    }
     public void Intakes()
     {
         if(gamepad1.rightTriggerWasPressed())
@@ -266,7 +308,7 @@ public class TeleOPCode extends LinearOpMode
         }
         else if(gamepad1.leftTriggerWasPressed())
         {
-            intake.setPower(1)                                                                                                                                                                                                 ;
+            intake.setPower(0.3)                                                                                                                                                                                                 ;
         }
         else if(gamepad1.leftTriggerWasReleased())
         {
@@ -274,22 +316,21 @@ public class TeleOPCode extends LinearOpMode
         }
     }
 
-    /*
-    public void Shooting()
+    public void rampMovement()
     {
-        if(gamepad2.rightTriggerWasPressed())
+        if(gamepad1.crossWasPressed())
         {
-            shooter.setPower(ShootingVelocity);// a number that will work after you test it
+            flowerRamp.setPosition(0.08);
         }
-        else if(gamepad2.rightTriggerWasReleased())
+        else if (gamepad1.triangleWasPressed())
         {
-            shooter.setPower(0);
+            flowerRamp.setPosition(1);
         }
-
-
     }
 
-     */
+
+
+
 
 //
 //    public void BallColor()

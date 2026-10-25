@@ -15,7 +15,7 @@ import com.qualcomm.robotcore.hardware.configuration.annotations.DigitalIoDevice
 //Now I am dangerously changing in the remote.
 
 @Autonomous(name = "Standard Auton Code", group = "Autonomous")
-public class StandardAuto extends LinearOpMode {
+public class     StandardAuto extends LinearOpMode {
     DcMotor frontLeft;
     DcMotor frontRight;
     DcMotor backLeft;
@@ -24,7 +24,6 @@ public class StandardAuto extends LinearOpMode {
     //ColorSensor colorSensor;
 
     DcMotor intake;
-
     DcMotorEx shooter;
 
     String color = "";
@@ -55,21 +54,22 @@ public class StandardAuto extends LinearOpMode {
         //colorSensor = hardwareMap.get(ColorSensor.class, "color");
 
         intake = hardwareMap.get(DcMotor.class, "intake");
-        shooter = hardwareMap.get(DcMotorEx.class, "shooter");
-        shooter.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        //shooter = hardwareMap.get(DcMotorEx.class, "shooter");
+        //shooter.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         PIDFCoefficients pidfCoefficients = new PIDFCoefficients(shooterP, 0, 0, shooterF);
-        shooter.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidfCoefficients);
+        //shooter.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidfCoefficients);
         waitForStart();
         telemetry.addData("Telemetry", "Called");
 
         if (opModeIsActive())
         {
-            shooter.setPower(1267);
-            intake.setPower(1267);
+            //shooter.setVelocity(1267);
+            //intake.setPower(1267);
             sleep(3000);
-            shooter.setPower(0);
-            turnLeft(6700);
+            //shooter.setVelocity(0);
+            moveForwards(6000);
+
         }
     }
     public void setMotorsPower(double fLSpeed,double fRSpeed,double rLSpeed,double rRSpeed)//function to set all motors to the same speed
@@ -77,12 +77,21 @@ public class StandardAuto extends LinearOpMode {
         //set the powers to drive the robot
         frontLeft.setPower(fLSpeed);
         frontRight.setPower(fRSpeed);
-        backLeft.setPower(-rLSpeed);
-        backRight.setPower(-rRSpeed);
+        backLeft.setPower(rLSpeed);
+        backRight.setPower(rRSpeed);
     }
+
+
+
     public void turnLeft(int time)
     {
         setMotorsPower(0,0.5,0.5,0);
+        sleep(time);
+        setMotorsPower(0,0,0,0);
+    }
+    public void moveForwards(int time)
+    {
+        setMotorsPower(1,1,1,1);
         sleep(time);
         setMotorsPower(0,0,0,0);
     }
