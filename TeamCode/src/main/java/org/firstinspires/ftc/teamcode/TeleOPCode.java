@@ -176,53 +176,27 @@ public class TeleOPCode extends LinearOpMode
                  */
             double backLeft_Vector = -gamepad1.left_stick_y - gamepad1.left_stick_x + gamepad1.right_stick_x;
 
-            if (Math.abs(frontLeft_Vector)>1) {
-                frontLeft_Vector = frontLeft_Vector < 0 ? -1 : 1;
-            }
-            if (Math.abs(backLeft_Vector)>1) {
-                backLeft_Vector = backLeft_Vector < 0 ? -1 : 1;
-            }
-            if (Math.abs(frontRight_Vector)>1) {
-                frontRight_Vector = frontRight_Vector < 0 ? -1 : 1;
-            }
-            if (Math.abs(backRight_Vector)>1) {
-                backRight_Vector = backRight_Vector < 0 ? -1 : 1;
-            }
+            double ratioControl = Math.max(Math.abs(frontLeft_Vector),Math.abs(frontRight_Vector));
+            ratioControl = Math.max(ratioControl, Math.abs(backLeft_Vector));
+            ratioControl = Math.max(ratioControl,Math.abs(backRight_Vector));
+            ratioControl = Math.max(ratioControl, 1.0);
                 /*
-                Just checks whether the vectors point in a positive direction and stores its sign.
-                For instance, if negative_Add is greater than 0, then it is positive and gets 1.
-                This is done for when the vector addition results in a number that is greater than
-                the bounds of the setPower function (that being from -1 to 1). This becomes
-                important when pushing the vector information into the set Power function
+                ratioControl effectively handles the data loss; this is vector normalization.
+                whereas cutting off each vector such that each vector was individually checked for
+                if they were outside the bounds of the setPower function, this uses a ratio so that
+                they are still within bounds. The issue with the previous fix was that ratios were
+                lost when they were cut off, such as vectors 1.4 and 1.8 (information is lost, where
+                the fact that the 0.4 and 0.8 are necessary for diagonals). Instead, you take the
+                largest value and divide each vector by that largest value to keep those ratios but
+                keep them within the bounds. if no vector has a magnitude has a value over 1.0, then
+                the 1.0 is the base case so that slow movement can be achieved.
 
-                -----------------------------------------------------------------------------------
-                IMPORTANT!
+                */
 
-                The '?' character used is called a ternary operator. This operator follows the
-                format of "(Boolean) ? (Option 1) : (Option 2)". You can think of this as a quick
-                and short if and else statement--as that is what is is. The colon(':') essentially
-                acts like an else (Otherwise an OR colloquial language). It First asks the question
-                "Is this boolean statement true?" if it is true, then Option 1 is returned; if not,
-                then Option 2 is returned. For clarification, the boolean statement can be anything
-                as long as it results as a boolean, such as a comparative operator (<,>,==, ect.),
-                functions, and primitives.
-                -----------------------------------------------------------------------------------
-                 */
-            /*
-                Here the ternary operator is used to check if the absolute value of the vector is
-                greater than 1. For instance, if the function setPower represented a circle with a
-                radius of 1 centered around the origin (0,0), then this comparison just checks if
-                the vector ends at a point outside the circle. If in the case that it is greater
-                than 1, then it defaults to the default value saved as negative_Add in order to stay
-                Within bounds. No important information is lost in this process as the ONLY CASE IN
-                WHICH A VECTOR HAS A MAGNITUDE GREATER THAN 1 IS IN EITHER ADDITION OR SUBTRACTION,
-                NEVER BOTH. The exact same process is followed for both frontLeft_Vector and frontRight_Vector,
-                the only difference being that each is specialized for its own vector information.
-                 */
-            frontLeft.setPower(frontLeft_Vector);
-            frontRight.setPower(frontRight_Vector);
-            backLeft.setPower(backLeft_Vector);
-            backRight.setPower(backRight_Vector);
+            frontLeft.setPower(frontLeft_Vector/ratioControl);
+            frontRight.setPower(frontRight_Vector/ratioControl);
+            backLeft.setPower(backLeft_Vector/ratioControl);
+            backRight.setPower(backRight_Vector/ratioControl);
 
         }
         else{
