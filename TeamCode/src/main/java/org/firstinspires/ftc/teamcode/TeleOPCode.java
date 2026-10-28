@@ -83,7 +83,7 @@ public class TeleOPCode extends LinearOpMode
 //                telemetry.addData("Color Blue", colorSensor.blue());
 //                telemetry.addData("Color Green", colorSensor.green());
                 telemetry.addData("Ball Color", color);
-                telemetry.addData("Flyhweel Speed", flywheel.getVelocity());
+                telemetry.addData("Flywheel Speed", flywheel.getVelocity());
 
                 telemetry.update();
 

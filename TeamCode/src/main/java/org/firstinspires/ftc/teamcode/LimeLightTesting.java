@@ -1,8 +1,8 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.hardware.limelightvision.LLResultTypes;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -16,6 +16,12 @@ import com.qualcomm.robotcore.hardware.configuration.annotations.DigitalIoDevice
 import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.robotcore.util.Range;
+import java.util.List;
+import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
+
+import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
+
+import java.util.List;
 
 @TeleOp(name = "Testing The LimeLight")
 public class LimeLightTesting extends LinearOpMode
@@ -53,6 +59,8 @@ public class LimeLightTesting extends LinearOpMode
     double speedModifier = 0.015;
     double degreeOfError = 1.0;
 
+    double distanceMeters;
+    double distanceInches;
 
     @Override
     public void runOpMode()
@@ -156,6 +164,7 @@ public class LimeLightTesting extends LinearOpMode
             // both of these classes are untested as of 10/22/2026 at 2:21pm
             Turret();
             Flywheel();
+            AprilTagDistance();
             //Shooting();
         }
     }
@@ -344,6 +353,45 @@ public class LimeLightTesting extends LinearOpMode
         else if(gamepad2.right_trigger <= 0.5)
         {
             flywheel.setVelocity(0);
+        }
+    }
+    public void AprilTagDistance()
+    {
+        LLResult result = limelight.getLatestResult();
+
+        if (result != null && result.isValid())
+        {
+            List<LLResultTypes.FiducialResult> tags = result.getFiducialResults();
+
+            if (tags != null && !tags.isEmpty())
+            {
+                LLResultTypes.FiducialResult tag = tags.get(0);
+
+                Pose3D pose = tag.getTargetPoseCameraSpace();
+
+                if (pose != null)
+                {
+                    double x = pose.getPosition().x;
+                    double y = pose.getPosition().y;
+                    double z = pose.getPosition().z;
+
+                    distanceMeters = Math.sqrt(x * x + y * y + z * z);
+
+                    distanceInches = distanceMeters * 39.3701;
+
+                    telemetry.addData("AprilTag ID", tag.getFiducialId());
+
+                    telemetry.addData("Distance to AprilTag", "%.2f inches", distanceInches);
+                }
+            }
+            else
+            {
+                telemetry.addData("AprilTag", "No tag detected");
+            }
+        }
+        else
+        {
+            telemetry.addData("Limelight", "No valid target");
         }
     }
     public void Intakes()
