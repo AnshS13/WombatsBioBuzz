@@ -31,7 +31,7 @@ public class TeleOPCode extends LinearOpMode
     String color = "";
 
     double shooterP = 3000;
-    double shooterF = 0.00047619;
+    double shooterF = 15.60;
     double ShootingVelocity = 0;
 
     double highVelo = 1500;
