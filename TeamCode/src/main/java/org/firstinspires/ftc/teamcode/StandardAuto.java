@@ -66,7 +66,7 @@ public class     StandardAuto extends LinearOpMode {
         {
             //shooter.setVelocity(1267);
             //intake.setPower(1267);
-            sleep(3000);
+            //sleep(3000);
             //shooter.setVelocity(0);
             moveForwards(6000);
 
@@ -94,6 +94,11 @@ public class     StandardAuto extends LinearOpMode {
         setMotorsPower(1,1,1,1);
         sleep(time);
         setMotorsPower(0,0,0,0);
+    }
+
+    public void ShootFour(int time)
+    {
+
     }
 
 }

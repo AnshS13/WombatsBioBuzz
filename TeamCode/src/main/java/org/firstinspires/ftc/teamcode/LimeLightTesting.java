@@ -56,8 +56,8 @@ public class LimeLightTesting extends LinearOpMode
     DcMotorEx flywheel;
     Limelight3A limelight;
     boolean autoAim = false;
-    double speedModifier = 0.015;
-    double degreeOfError = 1.0;
+    double speedModifier = 0.03;
+    double degreeOfError = 4.0;
 
     double distanceMeters;
     double distanceInches;
@@ -164,7 +164,7 @@ public class LimeLightTesting extends LinearOpMode
             // both of these classes are untested as of 10/22/2026 at 2:21pm
             Turret();
             Flywheel();
-            AprilTagDistance();
+
             //Shooting();
         }
     }
@@ -310,7 +310,7 @@ public class LimeLightTesting extends LinearOpMode
                 {
                     double turretPower = Range.clip(horizontalOffset * speedModifier, -0.3, 0.3);
 
-                    turretMotor.setPower(turretPower);
+                    turretMotor.setPower(-turretPower);
                 }
                 else
                 {

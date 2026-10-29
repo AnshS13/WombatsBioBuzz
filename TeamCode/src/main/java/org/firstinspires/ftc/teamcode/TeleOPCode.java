@@ -30,15 +30,15 @@ public class TeleOPCode extends LinearOpMode
     Servo flowerRamp;
     String color = "";
 
-    double shooterP = 0;
-    double shooterF = 0;
+    double shooterP = 3000;
+    double shooterF = 0.00047619;
     double ShootingVelocity = 0;
 
     double highVelo = 1500;
     double lowVelo = 1000;
 
     double currentTarget = highVelo;
-    double [] stepSizes = {10.0, 1.0, 0.1, 0.001, 0.0001};
+    double [] stepSizes = {10.0, 1.0, 0.1, 0.01, 0.001, 0.0001};
 
     int stepIndex = 1;
 
@@ -68,7 +68,7 @@ public class TeleOPCode extends LinearOpMode
         flowerRamp = hardwareMap.get(Servo.class, "flowerRamp");
 
         PIDFCoefficients pidfCoefficients = new PIDFCoefficients(shooterP, 0 , 0, shooterF);
-        //flywheel.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidfCoefficients);
+        flywheel.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidfCoefficients);
         waitForStart();
         telemetry.addData("Telemetry", "Called");
 
@@ -87,55 +87,54 @@ public class TeleOPCode extends LinearOpMode
 
                 telemetry.update();
 
-//                if(gamepad2.triangleWasPressed())
-//                {
-//                    if(currentTarget == highVelo)
-//                    {
-//                        currentTarget = lowVelo;
-//                    }
-//                    else
-//                    {
-//                        currentTarget = highVelo;
-//                    }
-//                }
-//
-//                if(gamepad2.crossWasPressed())
-//                {
-//                    stepIndex = (stepIndex + 1) % stepSizes.length;
-//                }
-//
-//                if(gamepad2.squareWasPressed())
-//                {
-//                   shooterF -= stepSizes[stepIndex];
-//                }
-//                if (gamepad2.circleWasPressed())
-//                {
-//                    shooterF += stepSizes[stepIndex];
-//                }
-//
-//                if(gamepad2.dpadUpWasPressed())
-//                {
-//                    shooterP -= stepSizes[stepIndex];
-//                }
-//                if (gamepad2.dpadDownWasPressed())
-//                {
-//                    shooterP += stepSizes[stepIndex];
-//                }
+                if(gamepad2.triangleWasPressed())
+                {
+                    if(currentTarget == highVelo)
+                    {
+                        currentTarget = lowVelo;
+                    }
+                    else
+                    {
+                        currentTarget = highVelo;
+                    }
+                }
 
-//                pidfCoefficients = new PIDFCoefficients(shooterP, 0, 0, shooterF);
-//                flywheel.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidfCoefficients);
-//                flywheel.setVelocity(currentTarget);
-//
-//                double currVelo = flywheel.getVelocity();
-//                double error = currentTarget - currVelo;
+                if(gamepad2.crossWasPressed())
+                {
+                    stepIndex = (stepIndex + 1) % stepSizes.length;
+                }
 
-//                telemetry.addData("Target Velo", currentTarget);
-//                telemetry.addData("Current Velo", currVelo);
-//                telemetry.addData("Error", "%.2f", error);
+                if(gamepad2.squareWasPressed())
+                {
+                   shooterF -= stepSizes[stepIndex];
+                }
+                if (gamepad2.circleWasPressed())
+                {
+                    shooterF += stepSizes[stepIndex];
+                }
+
+                if(gamepad2.dpadUpWasPressed())
+                {
+                    shooterP -= stepSizes[stepIndex];
+                }
+                if (gamepad2.dpadDownWasPressed())
+                {
+                    shooterP += stepSizes[stepIndex];
+                }
+
+                double currVelo = flywheel.getVelocity();
+                double error = currentTarget - currVelo;
+
+                pidfCoefficients = new PIDFCoefficients(shooterP, 0 , 0, shooterF);
+                flywheel.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidfCoefficients);
+
+                telemetry.addData("Target Velo", currentTarget);
+                telemetry.addData("Current Velo", currVelo);
+                telemetry.addData("Error", "%.2f", error);
                 telemetry.addLine("--------------------------------");
-                telemetry.addData("Tuning P", "%.4f", shooterP);
-                telemetry.addData("Tuning F", "%.4f", shooterF);
-                telemetry.addData("Step Size", "%.4f", stepSizes[stepIndex]);
+                telemetry.addData("Tuning P", "%.10f", shooterP);
+                telemetry.addData("Tuning F", "%.10f", shooterF);
+                telemetry.addData("Step Size", "%.10f", stepSizes[stepIndex]);
                 telemetry.addData("Ramp Servo Position" , flowerRamp.getPosition());
 
 
@@ -261,9 +260,9 @@ public class TeleOPCode extends LinearOpMode
     {
         if(gamepad2.right_trigger >= 0.5)
         {
-            flywheel.setVelocity(1750);
+            flywheel.setVelocity(currentTarget);
         }
-        else if(gamepad2.right_trigger <= 0.5)
+        else if(gamepad2.right_trigger <= 0.2)
         {
             flywheel.setVelocity(0);
         }
