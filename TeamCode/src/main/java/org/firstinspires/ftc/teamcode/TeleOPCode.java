@@ -30,7 +30,7 @@ public class TeleOPCode extends LinearOpMode
     Servo flowerRamp;
     String color = "";
 
-    double shooterP = 3000;
+    double shooterP = 0;
     double shooterF = 15.60333334;
     double ShootingVelocity = 0;
 
