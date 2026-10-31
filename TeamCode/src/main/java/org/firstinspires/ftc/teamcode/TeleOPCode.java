@@ -26,6 +26,8 @@ public class TeleOPCode extends LinearOpMode
 
     DcMotor intake;
 
+    DcMotor transfer;
+
     //DcMotorEx shooter;
     Servo flowerRamp;
     String color = "";
@@ -47,6 +49,7 @@ public class TeleOPCode extends LinearOpMode
     DcMotorEx flywheel;
 
 
+
     @Override
     public void runOpMode()
     {
@@ -61,7 +64,8 @@ public class TeleOPCode extends LinearOpMode
         flywheel = hardwareMap.get(DcMotorEx.class, "flywheel");
         flywheel.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         //colorSensor = hardwareMap.get(ColorSensor.class, "color");
-        
+
+        transfer = hardwareMap.get(DcMotor.class, "transfer");
 
         intake = hardwareMap.get(DcMotor.class, "intake");
 
@@ -267,6 +271,24 @@ public class TeleOPCode extends LinearOpMode
             flywheel.setVelocity(0);
         }
     }
+
+    public void Transfer()
+    {
+        if(gamepad2.right_bumper)
+        {
+            transfer.setPower(1);
+        }
+        else if(gamepad2.left_bumper)
+        {
+            transfer.setPower(-1);
+        }
+        else
+        {
+           transfer.setPower(0);
+        }
+    }
+
+
     public void Intakes()
     {
         if(gamepad1.rightTriggerWasPressed())
