@@ -161,6 +161,7 @@ public class LimeLightTesting extends LinearOpMode
             Omnimovement();
             Intakes();
             rampMovement();
+            AprilTagDistance();
             // both of these classes are untested as of 10/22/2026 at 2:21pm
             Turret();
             Flywheel();
@@ -308,7 +309,7 @@ public class LimeLightTesting extends LinearOpMode
 
                 if (Math.abs(horizontalOffset) > degreeOfError)
                 {
-                    double turretPower = Range.clip(horizontalOffset * speedModifier, -0.3, 0.3);
+                    double turretPower = Range.clip(horizontalOffset * speedModifier, -0.5, 0.5);
 
                     turretMotor.setPower(-turretPower);
                 }
