@@ -24,15 +24,14 @@ public class     StandardAuto extends LinearOpMode {
     //ColorSensor colorSensor;
 
     DcMotor intake;
-    DcMotorEx shooter;
+    DcMotorEx flywheel;
+    DcMotor transfer;
 
     String color = "";
 
-    double shooterP = 0;
-    double shooterF = 0;
-    double ShootingVelocity = 0;
+    double ShootingVelocity = 900;
 
-    double highVelo = 1500;
+    double highVelo = 1250;
     double lowVelo = 1000;
 
     double currentTarget = highVelo;
@@ -41,6 +40,9 @@ public class     StandardAuto extends LinearOpMode {
     int stepIndex = 1;
 
     double motorSpeed = 1;
+    double shooterP = 48.42232;
+    //109.772
+    double shooterF = 16.66483334;
 
 
     @Override
@@ -54,21 +56,23 @@ public class     StandardAuto extends LinearOpMode {
         //colorSensor = hardwareMap.get(ColorSensor.class, "color");
 
         intake = hardwareMap.get(DcMotor.class, "intake");
-        //shooter = hardwareMap.get(DcMotorEx.class, "shooter");
-        //shooter.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        flywheel = hardwareMap.get(DcMotorEx.class, "flywheel");
+        flywheel.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        transfer = hardwareMap.get(DcMotor.class, "transfer");
 
         PIDFCoefficients pidfCoefficients = new PIDFCoefficients(shooterP, 0, 0, shooterF);
-        //shooter.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidfCoefficients);
+        flywheel.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidfCoefficients);
         waitForStart();
         telemetry.addData("Telemetry", "Called");
 
         if (opModeIsActive())
         {
-            //shooter.setVelocity(1267);
+            shootFour(5000);
             //intake.setPower(1267);
-            //sleep(3000);
+            sleep(1000);
             //shooter.setVelocity(0);
-            moveForwards(6000);
+            moveForward(6000);
 
         }
     }
@@ -89,16 +93,23 @@ public class     StandardAuto extends LinearOpMode {
         sleep(time);
         setMotorsPower(0,0,0,0);
     }
-    public void moveForwards(int time)
+    public void moveForward(int time)
     {
-        setMotorsPower(1,1,1,1);
+        setMotorsPower(0.7,0.7,0.7,0.7);
         sleep(time);
         setMotorsPower(0,0,0,0);
     }
 
-    public void ShootFour(int time)
+    public void shootFour(int time)
     {
-
+        flywheel.setPower(ShootingVelocity);
+        sleep(500);
+        intake.setPower(1);
+        transfer.setPower(-1);
+        sleep(time);
+        intake.setPower(0);
+        transfer.setPower(0);
+        flywheel.setPower(0);
     }
 
 }

@@ -1,5 +1,8 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.hardware.limelightvision.LLResult;
+import com.qualcomm.hardware.limelightvision.LLResultTypes;
+import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.ColorSensor;
@@ -11,12 +14,24 @@ import com.qualcomm.robotcore.hardware.PIDCoefficients;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.configuration.annotations.DigitalIoDeviceType;
+import com.qualcomm.robotcore.util.Range;
+
+import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
+
+import java.util.List;
 //This is a test comment in the local file
 //Now I am dangerously changing in the remote.
 
 @TeleOp(name = "Tele-Op Team Code")
 public class TeleOPCode extends LinearOpMode
 {
+    Limelight3A limelight;
+    boolean autoAim = false;
+    double speedModifier = 0.03;
+    double degreeOfError = 4.0;
+
+    double distanceMeters;
+    double distanceInches;
     DcMotor frontLeft;
     DcMotor frontRight;
     DcMotor backLeft;
@@ -32,12 +47,14 @@ public class TeleOPCode extends LinearOpMode
     Servo flowerRamp;
     String color = "";
 
-    double shooterP = 45.772;
-    double shooterF = 14.60333334;
+    double shooterP = 48.42232;
+    //109.772
+    double shooterF = 16.66483334;
+    double shooterD = 0;
     double ShootingVelocity = 0;
 
-    double highVelo = 1575;
-    double lowVelo = 1000;
+    int highVelo = 1250;
+    int lowVelo = 1000;
 
     double currentTarget = highVelo;
     double [] stepSizes = {10.0, 1.0, 0.1, 0.01, 0.001, 0.0001};
@@ -65,13 +82,13 @@ public class TeleOPCode extends LinearOpMode
         flywheel.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         //colorSensor = hardwareMap.get(ColorSensor.class, "color");
 
-       transfer = hardwareMap.get(DcMotor.class, "transfer");
+        transfer = hardwareMap.get(DcMotor.class, "transfer");
 
         intake = hardwareMap.get(DcMotor.class, "intake");
 
         flowerRamp = hardwareMap.get(Servo.class, "flowerRamp");
 
-        PIDFCoefficients pidfCoefficients = new PIDFCoefficients(shooterP, 0 , 0, shooterF);
+        PIDFCoefficients pidfCoefficients = new PIDFCoefficients(shooterP, 0 ,  shooterD, shooterF);
         flywheel.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidfCoefficients);
         waitForStart();
         telemetry.addData("Telemetry", "Called");
@@ -83,53 +100,51 @@ public class TeleOPCode extends LinearOpMode
             {
                 telemetry.addData("X: ", gamepad1.left_stick_x);
                 telemetry.addData("Y: ", gamepad1.left_stick_y);
-//                telemetry.addData("Color Red", colorSensor.red());
-//                telemetry.addData("Color Blue", colorSensor.blue());
-//                telemetry.addData("Color Green", colorSensor.green());
                 telemetry.addData("Ball Color", color);
                 telemetry.addData("Flywheel Speed", flywheel.getVelocity());
 
                 telemetry.update();
 
-                if(gamepad2.triangleWasPressed())
-                {
-                    if(currentTarget == highVelo)
-                    {
-                        currentTarget = lowVelo;
-                    }
-                    else
-                    {
-                        currentTarget = highVelo;
-                    }
-                }
+//                if(gamepad2.triangleWasPressed())
+//                {
+//                    if(currentTarget == highVelo)
+//                    {
+//                        currentTarget = lowVelo;
+//                    }
+//                    else
+//                    {
+//                        currentTarget = highVelo;
+//                    }
+//                }
+//
+//                if(gamepad2.crossWasPressed())
+//                {
+//                    stepIndex = (stepIndex + 1) % stepSizes.length;
+//                }
+//
+//                if(gamepad2.squareWasPressed())
+//                {
+//                    shooterD -= stepSizes[stepIndex];
+//                }
+//                if (gamepad2.circleWasPressed())
+//                {
+//                    shooterD += stepSizes[stepIndex];
+//                }
+//
+//                if(gamepad2.dpadUpWasPressed())
+//                {
+//                    shooterP -= stepSizes[stepIndex];
+//                }
+//                if (gamepad2.dpadDownWasPressed())
+//                {
+//                    shooterP += stepSizes[stepIndex];
+//                }
 
-                if(gamepad2.crossWasPressed())
-                {
-                    stepIndex = (stepIndex + 1) % stepSizes.length;
-                }
-
-                if(gamepad2.squareWasPressed())
-                {
-                   shooterF -= stepSizes[stepIndex];
-                }
-                if (gamepad2.circleWasPressed())
-                {
-                    shooterF += stepSizes[stepIndex];
-                }
-
-                if(gamepad2.dpadUpWasPressed())
-                {
-                    shooterP -= stepSizes[stepIndex];
-                }
-                if (gamepad2.dpadDownWasPressed())
-                {
-                    shooterP += stepSizes[stepIndex];
-                }
 
                 double currVelo = flywheel.getVelocity();
                 double error = currentTarget - currVelo;
 
-                pidfCoefficients = new PIDFCoefficients(shooterP, 0 , 0, shooterF);
+                pidfCoefficients = new PIDFCoefficients(shooterP, 0 ,  0, shooterF);
                 flywheel.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidfCoefficients);
 
                 telemetry.addData("Target Velo", currentTarget);
@@ -246,21 +261,56 @@ public class TeleOPCode extends LinearOpMode
     }
     
     // this is untested as of 10/22/2026 at 2:21pm
-    public void Turret() // changed this
+    public void Turret()
     {
-        if(gamepad2.square)
-        {
-            turretMotor.setPower(0.3);
+        // Toggle auto-aim
+//        if (gamepad2.dpadLeftWasPressed())
+//        {
+//            autoAim = !autoAim;
+//        }
+//
+//        if (autoAim)
+//        {
+//            LLResult result = limelight.getLatestResult();
+//
+//            if (result != null && result.isValid())
+//            {
+//                double horizontalOffset = result.getTx();
+//
+//                telemetry.addData("Auto Aim", "Active");
+//                telemetry.addData("AprilTag TX", "%.2f", horizontalOffset);
+//
+//                if (Math.abs(horizontalOffset) > degreeOfError)
+//                {
+//                    double turretPower = Range.clip(horizontalOffset * speedModifier, -0.5, 0.5);
+//
+//                    turretMotor.setPower(-turretPower);
+//                }
+//                else
+//                {
+//                    turretMotor.setPower(0);
+//                }
+//            }
+//        if (!autoAim)
+//            {
+                // Stop if the target is lost
+                if(gamepad2.right_stick_x > 0.2)
+                {
+                    turretMotor.setPower(1);
+                }
+                else if (gamepad2.right_stick_x < -0.2)
+                {
+                     turretMotor.setPower(-1);
+                }
+                turretMotor.setPower(0);
+                telemetry.addData("Auto Aim", "No target");
+            //}
         }
-        else if(gamepad2.circle)
-        {
-            turretMotor.setPower(-0.3);
-        }
-        else
-        {
-            turretMotor.setPower(0);
-        }
-    }
+//        else
+//        {
+//            telemetry.addData("Auto Aim", "Off");
+//        }
+
 
     public void Flywheel()
     {
@@ -327,30 +377,45 @@ public class TeleOPCode extends LinearOpMode
 
 
 
-//
-//    public void BallColor()
-//    {
-//        if (colorSensor.red() > 200 || colorSensor.blue() > 200 || colorSensor.green() > 200)
-//        {
-//            if (colorSensor.red() > colorSensor.blue() && colorSensor.red() > colorSensor.green())
-//            {
-//                color = "Red";
-//            }
-//            else if (colorSensor.blue() > colorSensor.red() && colorSensor.blue() > colorSensor.green())
-//            {
-//
-//                color = "Blue";
-//            }
-//            else if (colorSensor.green() > colorSensor.red() && colorSensor.green() > colorSensor.blue())
-//            {
-//                color = "Yellow";
-//            }
-//        }
-//        else
-//        {
-//            color = "No Ball";
-//        }
-//    }
+    public void AprilTagDistance()
+    {
+        LLResult result = limelight.getLatestResult();
 
+        if (result != null && result.isValid())
+        {
+            List<LLResultTypes.FiducialResult> tags = result.getFiducialResults();
+
+            if (tags != null && !tags.isEmpty())
+            {
+                LLResultTypes.FiducialResult tag = tags.get(0);
+
+                Pose3D pose = tag.getTargetPoseCameraSpace();
+
+                if (pose != null)
+                {
+                    double x = pose.getPosition().x;
+                    double y = pose.getPosition().y;
+                    double z = pose.getPosition().z;
+
+                    distanceMeters = Math.sqrt(x * x + y * y + z * z);
+
+                    distanceInches = distanceMeters * 39.3701;
+
+                    telemetry.addData("AprilTag ID", tag.getFiducialId());
+
+                    telemetry.addData("Distance to AprilTag", "%.2f inches", distanceInches);
+                }
+            }
+            else
+            {
+                telemetry.addData("AprilTag", "No tag detected");
+            }
+        }
+        else
+        {
+            telemetry.addData("Limelight", "No valid target");
+        }
+    }
 }
+
 
