@@ -225,10 +225,10 @@ public class TeleOPCode extends LinearOpMode
             the 1.0 is the base case so that slow movement can be achieved.
             */
 
-            frontLeft.setPower(frontLeft_Vector / ratioControl * 0.75);
-            frontRight.setPower(frontRight_Vector / ratioControl * 0.75);
-            backLeft.setPower(backLeft_Vector / ratioControl * 0.75);
-            backRight.setPower(backRight_Vector / ratioControl * 0.75);
+            frontLeft.setPower(frontLeft_Vector / ratioControl);
+            frontRight.setPower(frontRight_Vector / ratioControl);
+            backLeft.setPower(backLeft_Vector / ratioControl);
+            backRight.setPower(backRight_Vector / ratioControl);
 
         }
         else{
