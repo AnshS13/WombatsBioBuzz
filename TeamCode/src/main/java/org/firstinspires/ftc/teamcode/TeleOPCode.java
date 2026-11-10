@@ -373,49 +373,6 @@ public class TeleOPCode extends LinearOpMode
         }
     }
 
-
-
-
-
-    public void AprilTagDistance()
-    {
-        LLResult result = limelight.getLatestResult();
-
-        if (result != null && result.isValid())
-        {
-            List<LLResultTypes.FiducialResult> tags = result.getFiducialResults();
-
-            if (tags != null && !tags.isEmpty())
-            {
-                LLResultTypes.FiducialResult tag = tags.get(0);
-
-                Pose3D pose = tag.getTargetPoseCameraSpace();
-
-                if (pose != null)
-                {
-                    double x = pose.getPosition().x;
-                    double y = pose.getPosition().y;
-                    double z = pose.getPosition().z;
-
-                    distanceMeters = Math.sqrt(x * x + y * y + z * z);
-
-                    distanceInches = distanceMeters * 39.3701;
-
-                    telemetry.addData("AprilTag ID", tag.getFiducialId());
-
-                    telemetry.addData("Distance to AprilTag", "%.2f inches", distanceInches);
-                }
-            }
-            else
-            {
-                telemetry.addData("AprilTag", "No tag detected");
-            }
-        }
-        else
-        {
-            telemetry.addData("Limelight", "No valid target");
-        }
-    }
 }
 
 
